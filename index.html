@@ -285,7 +285,7 @@
             }
 
             async function fetchReportData() {
-                const response = await fetch('./crypto_bot_comparison_report.md');
+                const response = await fetch('./unified_bot_report.md');
                  if (!response.ok) throw new Error(`Failed to fetch crypto_bot_comparison_report.md: ${response.statusText}`);
                 const markdown = await response.text();
                 const report = {};
