@@ -97,231 +97,231 @@
 </head>
 <body class="antialiased text-gray-800">
 
-    <div id="loading-overlay" class="fixed top-0 left-0 w-full h-full bg-white bg-opacity-75 flex justify-center items-center z-50">
-        <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" style="border-top-color: #4f46e5; animation: spin 1s linear infinite;"></div>
-        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-    </div>
+<div id="loading-overlay" class="fixed top-0 left-0 w-full h-full bg-white bg-opacity-75 flex justify-center items-center z-50">
+    <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" style="border-top-color: #4f46e5; animation: spin 1s linear infinite;"></div>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+</div>
 
-    <div class="container mx-auto px-4 sm:px-8 py-8">
-        <div class="py-8">
-            <div>
-                <h1 class="text-3xl font-bold leading-tight text-gray-900">Crypto Bot Performance Dashboard</h1>
-                <p class="mt-2 text-lg text-gray-600">A comparative analysis of the top trading bots.</p>
-            </div>
-             <!-- Ranking Formula Display -->
-            <div class="my-6 p-4 bg-white rounded-lg shadow">
-                <h3 class="font-bold text-lg mb-2">Bot Ranking Formula</h3>
-                <p class="text-sm text-gray-600">Bots are ranked based on a weighted score calculated from live performance metrics. Each metric is normalized to a 0-100 scale before applying weights.</p>
-                <code class="block bg-gray-100 p-2 rounded mt-2 text-xs">Score = (0.25 * Norm. Monthly Return) + (0.25 * Norm. Sharpe Ratio) + (0.20 * Norm. Calmar Ratio) + (0.10 * Norm. Time in Market) - (0.10 * Norm. Max Drawdown) - (0.10 * Norm. Recovery Time)</code>
-            </div>
-            <div class="my-5 flex justify-between items-center sm:flex-row flex-col">
-                <div class="relative">
+<div class="container mx-auto px-4 sm:px-8 py-8">
+    <div class="py-8">
+        <div>
+            <h1 class="text-3xl font-bold leading-tight text-gray-900">Crypto Bot Performance Dashboard</h1>
+            <p class="mt-2 text-lg text-gray-600">A comparative analysis of the top trading bots.</p>
+        </div>
+        <!-- Ranking Formula Display -->
+        <div class="my-6 p-4 bg-white rounded-lg shadow">
+            <h3 class="font-bold text-lg mb-2">Bot Ranking Formula</h3>
+            <p class="text-sm text-gray-600">Bots are ranked based on a weighted score calculated from live performance metrics. Each metric is normalized to a 0-100 scale before applying weights.</p>
+            <code class="block bg-gray-100 p-2 rounded mt-2 text-xs">Score = (0.25 * Norm. Monthly Return) + (0.25 * Norm. Sharpe Ratio) + (0.20 * Norm. Calmar Ratio) + (0.10 * Norm. Time in Market) - (0.10 * Norm. Max Drawdown) - (0.10 * Norm. Recovery Time)</code>
+        </div>
+        <div class="my-5 flex justify-between items-center sm:flex-row flex-col">
+            <div class="relative">
                      <span class="absolute inset-y-0 left-0 flex items-center pl-2">
                         <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current text-gray-500"><path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"></path></svg>
                     </span>
-                    <input placeholder="Search by bot name..." id="bot-search" class="appearance-none rounded-md border border-gray-400 block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none" />
+                <input placeholder="Search by bot name..." id="bot-search" class="appearance-none rounded-md border border-gray-400 block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none" />
+            </div>
+            <div class="flex items-center justify-center mt-4 sm:mt-0 space-x-4">
+                <button id="export-csv-btn" class="bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700">Export to CSV</button>
+                <div class="flex items-center">
+                    <span class="text-sm font-medium text-gray-900 mr-3">Live Data</span>
+                    <label for="table-data-toggle" class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="table-data-toggle" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-indigo-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
+                    <span class="text-sm font-medium text-gray-900 ml-3">Backtest Data</span>
                 </div>
-                <div class="flex items-center justify-center mt-4 sm:mt-0 space-x-4">
-                    <button id="export-csv-btn" class="bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700">Export to CSV</button>
-                    <div class="flex items-center">
-                        <span class="text-sm font-medium text-gray-900 mr-3">Live Data</span>
-                        <label for="table-data-toggle" class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="table-data-toggle" class="sr-only peer">
+            </div>
+        </div>
+        <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+            <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
+                <table class="min-w-full leading-normal">
+                    <thead id="main-table-head">
+                    <tr>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="rank">Rank</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="score">Score</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="bot_name">Bot Name</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="monthly_return">Monthly Return (%)</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="return">Return (%)</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="trades">Trades</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="market_change">Market Change (%)</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="expected_drawdown">Exp. Drawdown (%)</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="recovery_days">Recovery Days</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="exec_days">Exec. Days</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="avg_duration">Avg. Duration</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100"></th>
+                    </tr>
+                    </thead>
+                    <tbody id="bots-table-body">
+                    <!-- Bot data will be dynamically inserted here -->
+                    </tbody>
+                </table>
+                <div id="pagination-controls" class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
+                    <!-- Pagination will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Bot Selector for Charts -->
+        <div class="my-8">
+            <label class="block text-lg font-medium text-gray-700 mb-2">Select Bots for Charts (up to 10)</label>
+            <div id="bot-selector-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 border rounded-md bg-white">
+                <!-- Checkboxes will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <div class="chart-container">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="risk-chart-title" class="text-xl font-bold leading-tight text-gray-900 text-center">Risk & Performance Metrics (Live)</h2>
+                    <div class="flex items-center justify-center">
+                        <span class="text-sm font-medium text-gray-900 mr-3">Live</span>
+                        <label for="performance-toggle" class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" value="" id="performance-toggle" class="sr-only peer">
                             <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-indigo-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
                         </label>
-                        <span class="text-sm font-medium text-gray-900 ml-3">Backtest Data</span>
+                        <span class="text-sm font-medium text-gray-900 ml-3">Backtest</span>
                     </div>
                 </div>
+                <canvas id="riskPerformanceChart"></canvas>
             </div>
-            <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-                <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
-                    <table class="min-w-full leading-normal">
-                        <thead id="main-table-head">
-                            <tr>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="rank">Rank</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="score">Score</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="bot_name">Bot Name</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="monthly_return">Monthly Return (%)</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="return">Return (%)</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="trades">Trades</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="market_change">Market Change (%)</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="expected_drawdown">Exp. Drawdown (%)</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="recovery_days">Recovery Days</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="exec_days">Exec. Days</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="avg_duration">Avg. Duration</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="bots-table-body">
-                            <!-- Bot data will be dynamically inserted here -->
-                        </tbody>
-                    </table>
-                    <div id="pagination-controls" class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
-                        <!-- Pagination will be rendered here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bot Selector for Charts -->
-            <div class="my-8">
-                <label class="block text-lg font-medium text-gray-700 mb-2">Select Bots for Charts (up to 10)</label>
-                <div id="bot-selector-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 border rounded-md bg-white">
-                    <!-- Checkboxes will be dynamically inserted here -->
-                </div>
-            </div>
-
-            <!-- Charts -->
-            <div class="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-8">
                 <div class="chart-container">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 id="risk-chart-title" class="text-xl font-bold leading-tight text-gray-900 text-center">Risk & Performance Metrics (Live)</h2>
-                        <div class="flex items-center justify-center">
-                            <span class="text-sm font-medium text-gray-900 mr-3">Live</span>
-                            <label for="performance-toggle" class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" value="" id="performance-toggle" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-indigo-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                            </label>
-                            <span class="text-sm font-medium text-gray-900 ml-3">Backtest</span>
-                        </div>
-                    </div>
-                    <canvas id="riskPerformanceChart"></canvas>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-1 gap-8">
-                    <div class="chart-container">
-                        <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Selected Bots: Live vs. Backtest Avg. Monthly Return (%)</h2>
-                        <canvas id="returnChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Selected Bots: Live vs. Backtest Sharpe Ratio</h2>
-                        <canvas id="sharpeChart"></canvas>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- New Charts -->
-            <div class="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-8">
-                 <div class="chart-container">
-                    <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Selected Bots: Strategy Analysis (Live)</h2>
-                    <canvas id="strategyChart"></canvas>
+                    <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Selected Bots: Live vs. Backtest Avg. Monthly Return (%)</h2>
+                    <canvas id="returnChart"></canvas>
                 </div>
                 <div class="chart-container">
-                    <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center tooltip">
-                        Selected Bots: Efficiency View (Live)
-                        <span class="tooltiptext">This chart shows bot efficiency. Bubbles represent bots, with position indicating market exposure (X-axis) vs. return (Y-axis). Bubble size reflects trade frequency. Ideal bots are in the top-left (high return, low exposure).</span>
-                    </h2>
-                    <canvas id="efficiencyChart"></canvas>
+                    <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Selected Bots: Live vs. Backtest Sharpe Ratio</h2>
+                    <canvas id="sharpeChart"></canvas>
                 </div>
-            </div>
-             <div class="mt-8 grid grid-cols-1 gap-8">
-                <div class="chart-container">
-                    <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Selected Bots: Performance vs. Market (Live)</h2>
-                    <canvas id="marketPerformanceChart"></canvas>
-                </div>
-            </div>
-            
-            <!-- Quarterly Report Chart -->
-            <div class="mt-8 grid grid-cols-1 gap-8">
-                <div class="chart-container">
-                    <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Quarterly Performance Report</h2>
-                     <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
-                        <select id="timeframe-selector" class="rounded-md border-gray-300 shadow-sm">
-                            <option value="quarterly">Quarterly</option>
-                            <option value="yearly">Yearly</option>
-                            <option value="weekly">Weekly</option>
-                        </select>
-                        <input type="date" id="start-date" class="rounded-md border-gray-300 shadow-sm">
-                        <input type="date" id="end-date" class="rounded-md border-gray-300 shadow-sm">
-                        <div class="flex items-center">
-                            <span class="text-sm font-medium text-gray-900 mr-3">Live</span>
-                            <label for="quarterly-data-toggle" class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="quarterly-data-toggle" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                            </label>
-                            <span class="text-sm font-medium text-gray-900 ml-3">Backtest</span>
-                        </div>
-                        <button id="apply-filter-btn" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700">Apply</button>
-                    </div>
-                    <canvas id="quarterlyPerformanceChart"></canvas>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
-        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
-        <div class="modal-container bg-white w-11/12 md:max-w-4xl mx-auto rounded-lg shadow-lg z-50 overflow-y-auto" style="max-height: 90vh;">
-            <div class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50">
-                <svg class="fill-current text-white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg>
-            </div>
-            <div class="modal-content py-4 text-left px-6">
-                <div class="flex justify-between items-center pb-3">
-                    <p class="text-2xl font-bold" id="modal-bot-name"></p>
-                    <div class="modal-close cursor-pointer z-50"><svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg></div>
-                </div>
-                <div id="modal-bot-details" class="text-base leading-relaxed"></div>
             </div>
         </div>
+
+        <!-- New Charts -->
+        <div class="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <div class="chart-container">
+                <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Selected Bots: Strategy Analysis (Live)</h2>
+                <canvas id="strategyChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center tooltip">
+                    Selected Bots: Efficiency View (Live)
+                    <span class="tooltiptext">This chart shows bot efficiency. Bubbles represent bots, with position indicating market exposure (X-axis) vs. return (Y-axis). Bubble size reflects trade frequency. Ideal bots are in the top-left (high return, low exposure).</span>
+                </h2>
+                <canvas id="efficiencyChart"></canvas>
+            </div>
+        </div>
+        <div class="mt-8 grid grid-cols-1 gap-8">
+            <div class="chart-container">
+                <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Selected Bots: Performance vs. Market (Live)</h2>
+                <canvas id="marketPerformanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Quarterly Report Chart -->
+        <div class="mt-8 grid grid-cols-1 gap-8">
+            <div class="chart-container">
+                <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Quarterly Performance Report</h2>
+                <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
+                    <select id="timeframe-selector" class="rounded-md border-gray-300 shadow-sm">
+                        <option value="quarterly">Quarterly</option>
+                        <option value="yearly">Yearly</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                    <input type="date" id="start-date" class="rounded-md border-gray-300 shadow-sm">
+                    <input type="date" id="end-date" class="rounded-md border-gray-300 shadow-sm">
+                    <div class="flex items-center">
+                        <span class="text-sm font-medium text-gray-900 mr-3">Live</span>
+                        <label for="quarterly-data-toggle" class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="quarterly-data-toggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                        </label>
+                        <span class="text-sm font-medium text-gray-900 ml-3">Backtest</span>
+                    </div>
+                    <button id="apply-filter-btn" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700">Apply</button>
+                </div>
+                <canvas id="quarterlyPerformanceChart"></canvas>
+            </div>
+        </div>
+
     </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- GLOBAL STATE ---
-            let allBotsData = [];
-            let reportData = {};
-            let chartInstances = {};
-            let globalMetricsMinMax = {};
-            let currentSort = { key: 'rank', direction: 'asc' };
-            let currentPage = 1;
-            const rowsPerPage = 10;
-            let selectedBotsForCharts = [];
+<!-- Modal -->
+<div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
+    <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+    <div class="modal-container bg-white w-11/12 md:max-w-4xl mx-auto rounded-lg shadow-lg z-50 overflow-y-auto" style="max-height: 90vh;">
+        <div class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50">
+            <svg class="fill-current text-white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg>
+        </div>
+        <div class="modal-content py-4 text-left px-6">
+            <div class="flex justify-between items-center pb-3">
+                <p class="text-2xl font-bold" id="modal-bot-name"></p>
+                <div class="modal-close cursor-pointer z-50"><svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg></div>
+            </div>
+            <div id="modal-bot-details" class="text-base leading-relaxed"></div>
+        </div>
+    </div>
+</div>
 
-            // --- DATA FETCHING ---
-            async function fetchBotData() {
-                const response = await fetch('./crypto_bot_summary.json');
-                if (!response.ok) throw new Error(`Failed to fetch crypto_bot_summary.json: ${response.statusText}`);
-                return await response.json();
-            }
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- GLOBAL STATE ---
+        let allBotsData = [];
+        let reportData = {};
+        let chartInstances = {};
+        let globalMetricsMinMax = {};
+        let currentSort = { key: 'rank', direction: 'asc' };
+        let currentPage = 1;
+        const rowsPerPage = 10;
+        let selectedBotsForCharts = [];
 
-            async function fetchReportData() {
-                const response = await fetch('./unified_bot_report.md');
-                 if (!response.ok) throw new Error(`Failed to fetch unified_bot_report.md: ${response.statusText}`);
-                const markdown = await response.text();
-                const report = {};
-                const sections = markdown.split(/\n###\s*\d*\.?\s*/).slice(1);
-                sections.forEach(section => {
-                    const lines = section.split('\n');
-                    const botName = lines[0].trim();
-                    const analysisMarkdown = lines.slice(1).join('\n').trim();
-                    if (botName && analysisMarkdown) {
-                        report[botName] = marked.parse(analysisMarkdown);
-                    }
-                });
-                return report;
-            }
+        // --- DATA FETCHING ---
+        async function fetchBotData() {
+            const response = await fetch('./crypto_bot_summary.json');
+            if (!response.ok) throw new Error(`Failed to fetch crypto_bot_summary.json: ${response.statusText}`);
+            return await response.json();
+        }
 
-            // --- UI RENDERING & LOGIC ---
-            function populateTable(bots) {
-                const tableBody = document.getElementById('bots-table-body');
-                const isBacktest = document.getElementById('table-data-toggle').checked;
-                tableBody.innerHTML = '';
+        async function fetchReportData() {
+            const response = await fetch('./unified_bot_report.md');
+            if (!response.ok) throw new Error(`Failed to fetch unified_bot_report.md: ${response.statusText}`);
+            const markdown = await response.text();
+            const report = {};
+            const sections = markdown.split(/\n###\s*\d*\.?\s*/).slice(1);
+            sections.forEach(section => {
+                const lines = section.split('\n');
+                const botName = lines[0].trim();
+                const analysisMarkdown = lines.slice(1).join('\n').trim();
+                if (botName && analysisMarkdown) {
+                    report[botName] = marked.parse(analysisMarkdown);
+                }
+            });
+            return report;
+        }
 
-                bots.forEach((bot) => {
-                    const perfKey = isBacktest ? 'backtest_performance' : 'live_performance';
-                    const expectKey = isBacktest ? 'backtest_bot_expectation' : 'live_bot_expectation';
+        // --- UI RENDERING & LOGIC ---
+        function populateTable(bots) {
+            const tableBody = document.getElementById('bots-table-body');
+            const isBacktest = document.getElementById('table-data-toggle').checked;
+            tableBody.innerHTML = '';
 
-                    const monthlyReturn = bot[expectKey]?.['expected_avg_return (%)']?.toFixed(2) ?? 'N/A';
-                    const returnValue = bot[perfKey]?.['Return (%)']?.toFixed(2) ?? 'N/A';
-                    const trades = bot[perfKey]?.['Number of Trades'] ?? 'N/A';
-                    const marketChange = bot[perfKey]?.['Market Change (%)']?.toFixed(2) ?? 'N/A';
-                    const expDrawdown = bot[perfKey]?.['Worst Expected Drawdown (%)']?.toFixed(2) ?? 'N/A';
-                    const recoveryDays = bot[perfKey]?.['Maximum Recovery Time (Days)'] ?? 'N/A';
-                    const execDays = parseInt(bot[perfKey]?.['Number of Execution Days']) || 'N/A';
-                    const avgDuration = bot[perfKey]?.['Average Position’s Duration'] ?? 'N/A';
+            bots.forEach((bot) => {
+                const perfKey = isBacktest ? 'backtest_performance' : 'live_performance';
+                const expectKey = isBacktest ? 'backtest_bot_expectation' : 'live_bot_expectation';
 
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
+                const monthlyReturn = bot[expectKey]?.['expected_avg_return (%)']?.toFixed(2) ?? 'N/A';
+                const returnValue = bot[perfKey]?.['Return (%)']?.toFixed(2) ?? 'N/A';
+                const trades = bot[perfKey]?.['Number of Trades'] ?? 'N/A';
+                const marketChange = bot[perfKey]?.['Market Change (%)']?.toFixed(2) ?? 'N/A';
+                const expDrawdown = bot[perfKey]?.['Worst Expected Drawdown (%)']?.toFixed(2) ?? 'N/A';
+                const recoveryDays = bot[perfKey]?.['Maximum Recovery Time (Days)'] ?? 'N/A';
+                const execDays = parseInt(bot[perfKey]?.['Number of Execution Days']) || 'N/A';
+                const avgDuration = bot[perfKey]?.['Average Position’s Duration'] ?? 'N/A';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap">${bot.rank}</p></td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap font-semibold">${bot.score.toFixed(2)}</p></td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap font-semibold">${bot.bot_name}</p></td>
@@ -335,217 +335,217 @@
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap">${avgDuration}</p></td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-right"><button data-bot-id="${bot.bot_id}" class="view-details-btn text-indigo-600 hover:text-indigo-900 font-semibold">Details</button></td>
                     `;
-                    tableBody.appendChild(row);
-                });
+                tableBody.appendChild(row);
+            });
+        }
+
+        function destroyChart(chartId) {
+            if (chartInstances[chartId]) {
+                chartInstances[chartId].destroy();
             }
-            
-            function destroyChart(chartId) {
-                if (chartInstances[chartId]) {
-                    chartInstances[chartId].destroy();
-                }
-            }
+        }
 
-            function createBarCharts(bots) {
-                const botNames = bots.map(b => b.bot_name);
-                destroyChart('returnChart');
-                destroyChart('sharpeChart');
+        function createBarCharts(bots) {
+            const botNames = bots.map(b => b.bot_name);
+            destroyChart('returnChart');
+            destroyChart('sharpeChart');
 
-                const returnCtx = document.getElementById('returnChart').getContext('2d');
-                chartInstances.returnChart = new Chart(returnCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: botNames,
-                        datasets: [
-                            { label: 'Live Avg. Monthly Return', data: bots.map(b => b.live_bot_expectation['expected_avg_return (%)'] || 0), backgroundColor: 'rgba(54, 162, 235, 0.6)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 },
-                            { label: 'Backtest Avg. Monthly Return', data: bots.map(b => b.backtest_bot_expectation['expected_avg_return (%)'] || 0), backgroundColor: 'rgba(255, 99, 132, 0.6)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 1 }
-                        ]
-                    },
-                    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            const returnCtx = document.getElementById('returnChart').getContext('2d');
+            chartInstances.returnChart = new Chart(returnCtx, {
+                type: 'bar',
+                data: {
+                    labels: botNames,
+                    datasets: [
+                        { label: 'Live Avg. Monthly Return', data: bots.map(b => b.live_bot_expectation['expected_avg_return (%)'] || 0), backgroundColor: 'rgba(54, 162, 235, 0.6)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 },
+                        { label: 'Backtest Avg. Monthly Return', data: bots.map(b => b.backtest_bot_expectation['expected_avg_return (%)'] || 0), backgroundColor: 'rgba(255, 99, 132, 0.6)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 1 }
+                    ]
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+
+            const sharpeCtx = document.getElementById('sharpeChart').getContext('2d');
+            chartInstances.sharpeChart = new Chart(sharpeCtx, {
+                type: 'bar',
+                data: {
+                    labels: botNames,
+                    datasets: [
+                        { label: 'Live Sharpe Ratio', data: bots.map(b => b.live_performance['Sharpe Ratio'] || 0), backgroundColor: 'rgba(75, 192, 192, 0.6)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 1 },
+                        { label: 'Backtest Sharpe Ratio', data: bots.map(b => b.backtest_performance['Sharpe Ratio'] || 0), backgroundColor: 'rgba(255, 206, 86, 0.6)', borderColor: 'rgba(255, 206, 86, 1)', borderWidth: 1 }
+                    ]
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        function updateRiskPerformanceRadar(bots, mode = 'live') {
+            destroyChart('riskPerformanceChart');
+
+            const titleEl = document.getElementById('risk-chart-title');
+            titleEl.textContent = `Risk & Performance Metrics (${mode.charAt(0).toUpperCase() + mode.slice(1)})`;
+
+            const perfKey = mode === 'live' ? 'live_performance' : 'backtest_performance';
+            const expectKey = mode === 'live' ? 'live_bot_expectation' : 'backtest_bot_expectation';
+
+            const metrics = [
+                { label: 'Avg Monthly Return (%)', key: 'expected_avg_return (%)', source: expectKey, abs: false },
+                { label: 'Sharpe Ratio', key: 'Sharpe Ratio', source: perfKey, abs: false },
+                { label: 'Max Recovery Days', key: 'Maximum Recovery Time (Days)', source: perfKey, abs: true },
+                { label: 'Max Drawdown (%)', key: 'Max Drawdown (%)', source: perfKey, abs: true },
+            ];
+
+            const minMaxValues = metrics.map(metric => {
+                const values = bots.map(bot => {
+                    const rawValue = bot[metric.source]?.[metric.key] || 0;
+                    return metric.abs ? Math.abs(rawValue) : rawValue;
                 });
+                return { min: Math.min(...values), max: Math.max(...values) };
+            });
 
-                const sharpeCtx = document.getElementById('sharpeChart').getContext('2d');
-                chartInstances.sharpeChart = new Chart(sharpeCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: botNames,
-                        datasets: [
-                            { label: 'Live Sharpe Ratio', data: bots.map(b => b.live_performance['Sharpe Ratio'] || 0), backgroundColor: 'rgba(75, 192, 192, 0.6)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 1 },
-                            { label: 'Backtest Sharpe Ratio', data: bots.map(b => b.backtest_performance['Sharpe Ratio'] || 0), backgroundColor: 'rgba(255, 206, 86, 0.6)', borderColor: 'rgba(255, 206, 86, 1)', borderWidth: 1 }
-                        ]
-                    },
-                    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            const datasets = bots.map((bot, index) => {
+                const color = `hsl(${(index * 360 / bots.length)}, 70%, 50%)`;
+                const originalData = metrics.map(metric => bot[metric.source]?.[metric.key] || 0);
+                const scaledData = originalData.map((rawValue, i) => {
+                    const { min, max } = minMaxValues[i];
+                    const value = metrics[i].abs ? Math.abs(rawValue) : rawValue;
+                    const range = max - min;
+                    if (range === 0) return 50;
+                    return ((value - min) / range) * 100;
                 });
-            }
+                return {
+                    label: bot.bot_name,
+                    data: scaledData,
+                    originalData: originalData,
+                    backgroundColor: `hsla(${(index * 360 / bots.length)}, 70%, 50%, 0.2)`,
+                    borderColor: color,
+                    pointBackgroundColor: color,
+                };
+            });
 
-            function updateRiskPerformanceRadar(bots, mode = 'live') {
-                destroyChart('riskPerformanceChart');
-
-                const titleEl = document.getElementById('risk-chart-title');
-                titleEl.textContent = `Risk & Performance Metrics (${mode.charAt(0).toUpperCase() + mode.slice(1)})`;
-
-                const perfKey = mode === 'live' ? 'live_performance' : 'backtest_performance';
-                const expectKey = mode === 'live' ? 'live_bot_expectation' : 'backtest_bot_expectation';
-                
-                const metrics = [
-                    { label: 'Avg Monthly Return (%)', key: 'expected_avg_return (%)', source: expectKey, abs: false },
-                    { label: 'Sharpe Ratio', key: 'Sharpe Ratio', source: perfKey, abs: false },
-                    { label: 'Max Recovery Days', key: 'Maximum Recovery Time (Days)', source: perfKey, abs: true },
-                    { label: 'Max Drawdown (%)', key: 'Max Drawdown (%)', source: perfKey, abs: true },
-                ];
-
-                const minMaxValues = metrics.map(metric => {
-                    const values = bots.map(bot => {
-                        const rawValue = bot[metric.source]?.[metric.key] || 0;
-                        return metric.abs ? Math.abs(rawValue) : rawValue;
-                    });
-                    return { min: Math.min(...values), max: Math.max(...values) };
-                });
-
-                const datasets = bots.map((bot, index) => {
-                    const color = `hsl(${(index * 360 / bots.length)}, 70%, 50%)`;
-                    const originalData = metrics.map(metric => bot[metric.source]?.[metric.key] || 0);
-                    const scaledData = originalData.map((rawValue, i) => {
-                        const { min, max } = minMaxValues[i];
-                        const value = metrics[i].abs ? Math.abs(rawValue) : rawValue;
-                        const range = max - min;
-                        if (range === 0) return 50;
-                        return ((value - min) / range) * 100;
-                    });
-                    return {
-                        label: bot.bot_name,
-                        data: scaledData,
-                        originalData: originalData,
-                        backgroundColor: `hsla(${(index * 360 / bots.length)}, 70%, 50%, 0.2)`,
-                        borderColor: color,
-                        pointBackgroundColor: color,
-                    };
-                });
-                
-                const riskCtx = document.getElementById('riskPerformanceChart').getContext('2d');
-                chartInstances.riskPerformanceChart = new Chart(riskCtx, {
-                    type: 'radar',
-                    data: {
-                        labels: metrics.map(m => m.label),
-                        datasets: datasets
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: true, 
-                        plugins: { 
-                            legend: { position: 'bottom' },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const label = context.dataset.label || '';
-                                        const originalValue = context.dataset.originalData[context.dataIndex];
-                                        return `${label}: ${originalValue?.toFixed(2) ?? 'N/A'}`;
-                                    }
+            const riskCtx = document.getElementById('riskPerformanceChart').getContext('2d');
+            chartInstances.riskPerformanceChart = new Chart(riskCtx, {
+                type: 'radar',
+                data: {
+                    labels: metrics.map(m => m.label),
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const originalValue = context.dataset.originalData[context.dataIndex];
+                                    return `${label}: ${originalValue?.toFixed(2) ?? 'N/A'}`;
                                 }
                             }
+                        }
+                    },
+                    scales: { r: { beginAtZero: true, min: 0, max: 100 } }
+                }
+            });
+        }
+
+        function createNewCharts(bots) {
+            destroyChart('strategyChart');
+            destroyChart('efficiencyChart');
+            destroyChart('marketPerformanceChart');
+
+            // 1. Strategy Analysis: Win Rate vs. Profit/Loss Ratio (Scatter Plot)
+            const strategyCtx = document.getElementById('strategyChart').getContext('2d');
+            chartInstances.strategyChart = new Chart(strategyCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: bots.map((bot, index) => {
+                        const color = `hsl(${(index * 360 / bots.length)}, 70%, 50%)`;
+                        return {
+                            label: bot.bot_name,
+                            data: [{
+                                x: bot.live_performance['Profit/Loss Ratio'] || 0,
+                                y: bot.live_performance['Win Rate (%)'] || 0
+                            }],
+                            backgroundColor: color
+                        };
+                    })
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: {
+                        x: { title: { display: true, text: 'Profit/Loss Ratio' } },
+                        y: { title: { display: true, text: 'Win Rate (%)' } }
+                    }
+                }
+            });
+
+            // 2. Efficiency View: Time in Market vs. Return (Bubble Chart)
+            const efficiencyCtx = document.getElementById('efficiencyChart').getContext('2d');
+            chartInstances.efficiencyChart = new Chart(efficiencyCtx, {
+                type: 'bubble',
+                data: {
+                    datasets: bots.map((bot, index) => {
+                        const color = `hsl(${(index * 360 / bots.length)}, 70%, 50%)`;
+                        return {
+                            label: bot.bot_name,
+                            data: [{
+                                x: bot.live_performance['Time in Market (%)'] || 0,
+                                y: bot.live_bot_expectation['expected_avg_return (%)'] || 0,
+                                r: (bot.live_performance['Number of Trades'] || 0) / 20 // Scale bubble size
+                            }],
+                            backgroundColor: `hsla(${(index * 360 / bots.length)}, 70%, 50%, 0.7)`
+                        };
+                    })
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: {
+                        x: { title: { display: true, text: 'Time in Market (%)' } },
+                        y: { title: { display: true, text: 'Monthly Return (%)' } }
+                    }
+                }
+            });
+
+            // 3. Performance vs. Market Conditions (Vertical Bar Chart)
+            const marketCtx = document.getElementById('marketPerformanceChart').getContext('2d');
+            chartInstances.marketPerformanceChart = new Chart(marketCtx, {
+                type: 'bar',
+                data: {
+                    labels: bots.map(b => b.bot_name),
+                    datasets: [
+                        {
+                            label: 'Return (%)',
+                            data: bots.map(b => b.live_performance['Return (%)'] || 0),
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)'
                         },
-                        scales: { r: { beginAtZero: true, min: 0, max: 100 } }
-                    }
-                });
-            }
-
-            function createNewCharts(bots) {
-                destroyChart('strategyChart');
-                destroyChart('efficiencyChart');
-                destroyChart('marketPerformanceChart');
-
-                // 1. Strategy Analysis: Win Rate vs. Profit/Loss Ratio (Scatter Plot)
-                const strategyCtx = document.getElementById('strategyChart').getContext('2d');
-                chartInstances.strategyChart = new Chart(strategyCtx, {
-                    type: 'scatter',
-                    data: {
-                        datasets: bots.map((bot, index) => {
-                            const color = `hsl(${(index * 360 / bots.length)}, 70%, 50%)`;
-                            return {
-                                label: bot.bot_name,
-                                data: [{
-                                    x: bot.live_performance['Profit/Loss Ratio'] || 0,
-                                    y: bot.live_performance['Win Rate (%)'] || 0
-                                }],
-                                backgroundColor: color
-                            };
-                        })
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { position: 'bottom' } },
-                        scales: {
-                            x: { title: { display: true, text: 'Profit/Loss Ratio' } },
-                            y: { title: { display: true, text: 'Win Rate (%)' } }
+                        {
+                            label: 'Market Change (%)',
+                            data: bots.map(b => b.live_performance['Market Change (%)'] || 0),
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)'
                         }
-                    }
-                });
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: { y: { beginAtZero: false } }
+                }
+            });
+        }
 
-                // 2. Efficiency View: Time in Market vs. Return (Bubble Chart)
-                const efficiencyCtx = document.getElementById('efficiencyChart').getContext('2d');
-                chartInstances.efficiencyChart = new Chart(efficiencyCtx, {
-                    type: 'bubble',
-                    data: {
-                        datasets: bots.map((bot, index) => {
-                            const color = `hsl(${(index * 360 / bots.length)}, 70%, 50%)`;
-                            return {
-                                label: bot.bot_name,
-                                data: [{
-                                    x: bot.live_performance['Time in Market (%)'] || 0,
-                                    y: bot.live_bot_expectation['expected_avg_return (%)'] || 0,
-                                    r: (bot.live_performance['Number of Trades'] || 0) / 20 // Scale bubble size
-                                }],
-                                backgroundColor: `hsla(${(index * 360 / bots.length)}, 70%, 50%, 0.7)`
-                            };
-                        })
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { position: 'bottom' } },
-                        scales: {
-                            x: { title: { display: true, text: 'Time in Market (%)' } },
-                            y: { title: { display: true, text: 'Monthly Return (%)' } }
-                        }
-                    }
-                });
+        // --- MODAL HANDLING ---
+        const modal = document.querySelector('.modal');
 
-                // 3. Performance vs. Market Conditions (Vertical Bar Chart)
-                const marketCtx = document.getElementById('marketPerformanceChart').getContext('2d');
-                chartInstances.marketPerformanceChart = new Chart(marketCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: bots.map(b => b.bot_name),
-                        datasets: [
-                            {
-                                label: 'Return (%)',
-                                data: bots.map(b => b.live_performance['Return (%)'] || 0),
-                                backgroundColor: 'rgba(54, 162, 235, 0.6)'
-                            },
-                            {
-                                label: 'Market Change (%)',
-                                data: bots.map(b => b.live_performance['Market Change (%)'] || 0),
-                                backgroundColor: 'rgba(255, 99, 132, 0.6)'
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { position: 'bottom' } },
-                        scales: { y: { beginAtZero: false } }
-                    }
-                });
-            }
-            
-            // --- MODAL HANDLING ---
-            const modal = document.querySelector('.modal');
-            
-            function openModal(botId) {
-                const bot = allBotsData.find(b => b.bot_id === botId);
-                if (!bot) return;
+        function openModal(botId) {
+            const bot = allBotsData.find(b => b.bot_id === botId);
+            if (!bot) return;
 
-                document.getElementById('modal-bot-name').innerText = bot.bot_name;
-                const modalDetails = document.getElementById('modal-bot-details');
-                
-                modalDetails.innerHTML = `
+            document.getElementById('modal-bot-name').innerText = bot.bot_name;
+            const modalDetails = document.getElementById('modal-bot-details');
+
+            modalDetails.innerHTML = `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <h3 class="font-bold text-lg mb-2 border-b pb-1">Live Performance</h3>
@@ -575,167 +575,167 @@
                     <div class="mt-4"><canvas id="detailRadarChart"></canvas></div>
                 `;
 
-                createDetailRadarChart(bot);
-                modal.classList.remove('opacity-0', 'pointer-events-none');
-                document.body.classList.add('modal-active');
-            }
+            createDetailRadarChart(bot);
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            document.body.classList.add('modal-active');
+        }
 
-            function createDetailRadarChart(bot) {
-                destroyChart('detailRadarChart');
-                const ctx = document.getElementById('detailRadarChart').getContext('2d');
+        function createDetailRadarChart(bot) {
+            destroyChart('detailRadarChart');
+            const ctx = document.getElementById('detailRadarChart').getContext('2d');
 
-                const metrics = [
-                    { label: 'Monthly Return (%)', key: 'expected_avg_return (%)', source: 'expectation', abs: false },
-                    { label: 'Sharpe Ratio', key: 'Sharpe Ratio', source: 'performance', abs: false },
-                    { label: 'Win Rate (%)', key: 'Win Rate (%)', source: 'performance', abs: false },
-                    { label: 'Max Drawdown (%)', key: 'Max Drawdown (%)', source: 'performance', abs: true },
-                    { label: 'Max Recovery Days', key: 'Maximum Recovery Time (Days)', source: 'performance', abs: true }
-                ];
-                
-                const liveData = metrics.map(m => {
-                    const sourceObj = m.source === 'performance' ? bot.live_performance : bot.live_bot_expectation;
-                    return sourceObj?.[m.key] || 0;
-                });
-                const backtestData = metrics.map(m => {
-                    const sourceObj = m.source === 'performance' ? bot.backtest_performance : bot.backtest_bot_expectation;
-                    return sourceObj?.[m.key] || 0;
-                });
+            const metrics = [
+                { label: 'Monthly Return (%)', key: 'expected_avg_return (%)', source: 'expectation', abs: false },
+                { label: 'Sharpe Ratio', key: 'Sharpe Ratio', source: 'performance', abs: false },
+                { label: 'Win Rate (%)', key: 'Win Rate (%)', source: 'performance', abs: false },
+                { label: 'Max Drawdown (%)', key: 'Max Drawdown (%)', source: 'performance', abs: true },
+                { label: 'Max Recovery Days', key: 'Maximum Recovery Time (Days)', source: 'performance', abs: true }
+            ];
 
-                // Use pre-calculated global min/max for scaling
-                const scaledLiveData = liveData.map((val, i) => {
-                    const metricKey = metrics[i].key;
-                    const { min, max } = globalMetricsMinMax[metricKey];
-                    const value = metrics[i].abs ? Math.abs(val) : val;
-                    const range = max - min;
-                    return range === 0 ? 50 : ((value - min) / range) * 100;
-                });
+            const liveData = metrics.map(m => {
+                const sourceObj = m.source === 'performance' ? bot.live_performance : bot.live_bot_expectation;
+                return sourceObj?.[m.key] || 0;
+            });
+            const backtestData = metrics.map(m => {
+                const sourceObj = m.source === 'performance' ? bot.backtest_performance : bot.backtest_bot_expectation;
+                return sourceObj?.[m.key] || 0;
+            });
 
-                const scaledBacktestData = backtestData.map((val, i) => {
-                    const metricKey = metrics[i].key;
-                    const { min, max } = globalMetricsMinMax[metricKey];
-                    const value = metrics[i].abs ? Math.abs(val) : val;
-                    const range = max - min;
-                    return range === 0 ? 50 : ((value - min) / range) * 100;
-                });
+            // Use pre-calculated global min/max for scaling
+            const scaledLiveData = liveData.map((val, i) => {
+                const metricKey = metrics[i].key;
+                const { min, max } = globalMetricsMinMax[metricKey];
+                const value = metrics[i].abs ? Math.abs(val) : val;
+                const range = max - min;
+                return range === 0 ? 50 : ((value - min) / range) * 100;
+            });
 
-                chartInstances.detailRadarChart = new Chart(ctx, {
-                    type: 'radar',
-                    data: {
-                        labels: metrics.map(m => m.label),
-                        datasets: [
-                            {
-                                label: 'Live',
-                                data: scaledLiveData,
-                                originalData: liveData,
-                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 2
-                            },
-                            {
-                                label: 'Backtest',
-                                data: scaledBacktestData,
-                                originalData: backtestData,
-                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                borderWidth: 2
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { 
-                            legend: { position: 'top' },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const label = context.dataset.label || '';
-                                        const originalValue = context.dataset.originalData[context.dataIndex];
-                                        return `${label}: ${originalValue?.toFixed(2) ?? 'N/A'}`;
-                                    }
+            const scaledBacktestData = backtestData.map((val, i) => {
+                const metricKey = metrics[i].key;
+                const { min, max } = globalMetricsMinMax[metricKey];
+                const value = metrics[i].abs ? Math.abs(val) : val;
+                const range = max - min;
+                return range === 0 ? 50 : ((value - min) / range) * 100;
+            });
+
+            chartInstances.detailRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: metrics.map(m => m.label),
+                    datasets: [
+                        {
+                            label: 'Live',
+                            data: scaledLiveData,
+                            originalData: liveData,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Backtest',
+                            data: scaledBacktestData,
+                            originalData: backtestData,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const originalValue = context.dataset.originalData[context.dataIndex];
+                                    return `${label}: ${originalValue?.toFixed(2) ?? 'N/A'}`;
                                 }
                             }
-                        },
-                        scales: { r: { beginAtZero: true, min: 0, max: 100 } }
-                    }
-                });
-            }
-
-            function closeModal() {
-                modal.classList.add('opacity-0', 'pointer-events-none');
-                document.body.classList.remove('modal-active');
-            }
-
-            // --- DATA PROCESSING & RENDERING ---
-            function render() {
-                const searchTerm = document.getElementById('bot-search').value.toLowerCase();
-                
-                let processedData = allBotsData.filter(bot => bot.bot_name.toLowerCase().includes(searchTerm));
-
-                const sortKey = currentSort.key;
-                const sortDir = currentSort.direction === 'asc' ? 1 : -1;
-                const isTableBacktest = document.getElementById('table-data-toggle').checked;
-
-                const valueGetter = (bot, key) => {
-                    const perfKey = isTableBacktest ? 'backtest_performance' : 'live_performance';
-                    const expectKey = isTableBacktest ? 'backtest_bot_expectation' : 'live_bot_expectation';
-                    
-                    switch (key) {
-                        case 'rank': return bot.rank;
-                        case 'score': return bot.score;
-                        case 'bot_name': return bot.bot_name;
-                        case 'monthly_return': 
-                            return bot[expectKey]?.['expected_avg_return (%)'] || -Infinity;
-                        case 'return':
-                            return bot[perfKey]?.['Return (%)'] || -Infinity;
-                        case 'trades':
-                            return bot[perfKey]?.['Number of Trades'] || -Infinity;
-                        case 'market_change':
-                            return bot[perfKey]?.['Market Change (%)'] || -Infinity;
-                        case 'expected_drawdown':
-                            return bot[perfKey]?.['Worst Expected Drawdown (%)'] || -Infinity;
-                        case 'recovery_days':
-                            return bot[perfKey]?.['Maximum Recovery Time (Days)'] || -Infinity;
-                        case 'exec_days':
-                            return parseInt(bot[perfKey]?.['Number of Execution Days']) || -Infinity;
-                        case 'avg_duration':
-                            return bot[perfKey]?.['Average Position’s Duration'] || "";
-                        default: return 0;
-                    }
-                };
-
-                processedData.sort((a, b) => {
-                    const valA = valueGetter(a, sortKey);
-                    const valB = valueGetter(b, sortKey);
-                    if (typeof valA === 'string' && sortKey === 'bot_name') {
-                        return valA.localeCompare(valB) * sortDir;
-                    }
-                    if (typeof valA === 'string') return sortDir;
-                    return (valA - valB) * sortDir;
-                });
-                
-                const totalPages = Math.ceil(processedData.length / rowsPerPage);
-                const paginatedData = processedData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-
-                populateTable(paginatedData);
-                renderPagination(processedData.length, totalPages);
-            }
-            
-            function renderPagination(totalItems, totalPages) {
-                const controls = document.getElementById('pagination-controls');
-                if (totalPages <= 1) {
-                    controls.innerHTML = '';
-                    return;
+                        }
+                    },
+                    scales: { r: { beginAtZero: true, min: 0, max: 100 } }
                 }
-                
-                const startItem = (currentPage - 1) * rowsPerPage + 1;
-                const endItem = Math.min(currentPage * rowsPerPage, totalItems);
+            });
+        }
 
-                let buttonsHtml = '';
-                for (let i = 1; i <= totalPages; i++) {
-                    buttonsHtml += `<button class="pagination-btn text-sm bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold py-1 px-3 rounded-md mx-1 ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+        function closeModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            document.body.classList.remove('modal-active');
+        }
+
+        // --- DATA PROCESSING & RENDERING ---
+        function render() {
+            const searchTerm = document.getElementById('bot-search').value.toLowerCase();
+
+            let processedData = allBotsData.filter(bot => bot.bot_name.toLowerCase().includes(searchTerm));
+
+            const sortKey = currentSort.key;
+            const sortDir = currentSort.direction === 'asc' ? 1 : -1;
+            const isTableBacktest = document.getElementById('table-data-toggle').checked;
+
+            const valueGetter = (bot, key) => {
+                const perfKey = isTableBacktest ? 'backtest_performance' : 'live_performance';
+                const expectKey = isTableBacktest ? 'backtest_bot_expectation' : 'live_bot_expectation';
+
+                switch (key) {
+                    case 'rank': return bot.rank;
+                    case 'score': return bot.score;
+                    case 'bot_name': return bot.bot_name;
+                    case 'monthly_return':
+                        return bot[expectKey]?.['expected_avg_return (%)'] || -Infinity;
+                    case 'return':
+                        return bot[perfKey]?.['Return (%)'] || -Infinity;
+                    case 'trades':
+                        return bot[perfKey]?.['Number of Trades'] || -Infinity;
+                    case 'market_change':
+                        return bot[perfKey]?.['Market Change (%)'] || -Infinity;
+                    case 'expected_drawdown':
+                        return bot[perfKey]?.['Worst Expected Drawdown (%)'] || -Infinity;
+                    case 'recovery_days':
+                        return bot[perfKey]?.['Maximum Recovery Time (Days)'] || -Infinity;
+                    case 'exec_days':
+                        return parseInt(bot[perfKey]?.['Number of Execution Days']) || -Infinity;
+                    case 'avg_duration':
+                        return bot[perfKey]?.['Average Position’s Duration'] || "";
+                    default: return 0;
                 }
+            };
 
-                controls.innerHTML = `
+            processedData.sort((a, b) => {
+                const valA = valueGetter(a, sortKey);
+                const valB = valueGetter(b, sortKey);
+                if (typeof valA === 'string' && sortKey === 'bot_name') {
+                    return valA.localeCompare(valB) * sortDir;
+                }
+                if (typeof valA === 'string') return sortDir;
+                return (valA - valB) * sortDir;
+            });
+
+            const totalPages = Math.ceil(processedData.length / rowsPerPage);
+            const paginatedData = processedData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
+            populateTable(paginatedData);
+            renderPagination(processedData.length, totalPages);
+        }
+
+        function renderPagination(totalItems, totalPages) {
+            const controls = document.getElementById('pagination-controls');
+            if (totalPages <= 1) {
+                controls.innerHTML = '';
+                return;
+            }
+
+            const startItem = (currentPage - 1) * rowsPerPage + 1;
+            const endItem = Math.min(currentPage * rowsPerPage, totalItems);
+
+            let buttonsHtml = '';
+            for (let i = 1; i <= totalPages; i++) {
+                buttonsHtml += `<button class="pagination-btn text-sm bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold py-1 px-3 rounded-md mx-1 ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+
+            controls.innerHTML = `
                     <span class="text-xs xs:text-sm text-gray-900">
                         Showing ${startItem} to ${endItem} of ${totalItems} Entries
                     </span>
@@ -745,410 +745,410 @@
                         <button id="next-page" class="pagination-btn text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
                     </div>
                 `;
+        }
+
+        function calculateRankingScore(bot, minMaxData) {
+            const weights = {
+                monthlyReturn: 0.25,
+                sharpeRatio: 0.25,
+                calmarRatio: 0.20,
+                timeInMarket: 0.10,
+                maxDrawdown: -0.10,
+                recoveryTime: -0.10,
+            };
+
+            const metricPaths = {
+                monthlyReturn: 'live_bot_expectation.expected_avg_return (%)',
+                sharpeRatio: 'live_performance.Sharpe Ratio',
+                calmarRatio: 'live_performance.Calmar Ratio',
+                timeInMarket: 'live_performance.Time in Market (%)',
+                maxDrawdown: 'live_performance.Worst Expected Drawdown (%)',
+                recoveryTime: 'live_performance.Maximum Recovery Time (Days)',
+            };
+
+            const metrics = {};
+            for (const key in metricPaths) {
+                const path = metricPaths[key];
+                const rawValue = path.split('.').reduce((o, k) => (o || {})[k], bot);
+                metrics[key] = parseFloat(rawValue) || 0;
             }
 
-            function calculateRankingScore(bot, minMaxData) {
-                const weights = {
-                    monthlyReturn: 0.25,
-                    sharpeRatio: 0.25,
-                    calmarRatio: 0.20,
-                    timeInMarket: 0.10,
-                    maxDrawdown: -0.10,
-                    recoveryTime: -0.10,
-                };
-                
-                const metricPaths = {
-                    monthlyReturn: 'live_bot_expectation.expected_avg_return (%)',
-                    sharpeRatio: 'live_performance.Sharpe Ratio',
-                    calmarRatio: 'live_performance.Calmar Ratio',
-                    timeInMarket: 'live_performance.Time in Market (%)',
-                    maxDrawdown: 'live_performance.Worst Expected Drawdown (%)',
-                    recoveryTime: 'live_performance.Maximum Recovery Time (Days)',
-                };
-
-                const metrics = {};
-                for (const key in metricPaths) {
-                    const path = metricPaths[key];
-                    const rawValue = path.split('.').reduce((o, k) => (o || {})[k], bot);
-                    metrics[key] = parseFloat(rawValue) || 0;
-                }
-
-                const normalized = {};
-                for (const key in metrics) {
-                    const { min, max } = minMaxData[key];
-                    const range = max - min;
-                    normalized[key] = range === 0 ? 0 : (metrics[key] - min) / range;
-                }
-
-                let score = 0;
-                for (const key in weights) {
-                    score += (normalized[key] * weights[key]);
-                }
-                
-                const scaledScore = (score + 0.2) * 100;
-
-                return isNaN(scaledScore) ? 0 : scaledScore;
+            const normalized = {};
+            for (const key in metrics) {
+                const { min, max } = minMaxData[key];
+                const range = max - min;
+                normalized[key] = range === 0 ? 0 : (metrics[key] - min) / range;
             }
 
-            function updateCharts() {
-                const selectedBots = allBotsData.filter(bot => selectedBotsForCharts.includes(bot.bot_id));
-                createBarCharts(selectedBots);
-                updateRiskPerformanceRadar(selectedBots, document.getElementById('performance-toggle').checked ? 'backtest' : 'live');
-                createNewCharts(selectedBots);
-                createQuarterlyChart(selectedBots);
+            let score = 0;
+            for (const key in weights) {
+                score += (normalized[key] * weights[key]);
             }
 
-            function exportTableToCSV() {
-                const isBacktest = document.getElementById('table-data-toggle').checked;
-                const headers = Array.from(document.querySelectorAll('#main-table-head th')).map(th => th.innerText.trim()).slice(0, -1);
-                
-                const rows = allBotsData.map(bot => {
-                    const perfKey = isBacktest ? 'backtest_performance' : 'live_performance';
-                    const expectKey = isBacktest ? 'backtest_bot_expectation' : 'live_bot_expectation';
-                    return [
-                        bot.rank,
-                        bot.score.toFixed(2),
-                        bot.bot_name,
-                        bot[expectKey]?.['expected_avg_return (%)']?.toFixed(2) ?? 'N/A',
-                        bot[perfKey]?.['Return (%)']?.toFixed(2) ?? 'N/A',
-                        bot[perfKey]?.['Number of Trades'] ?? 'N/A',
-                        bot[perfKey]?.['Market Change (%)']?.toFixed(2) ?? 'N/A',
-                        bot[perfKey]?.['Worst Expected Drawdown (%)']?.toFixed(2) ?? 'N/A',
-                        bot[perfKey]?.['Maximum Recovery Time (Days)'] ?? 'N/A',
-                        parseInt(bot[perfKey]?.['Number of Execution Days']) || 'N/A',
-                        bot[perfKey]?.['Average Position’s Duration'] ?? 'N/A',
-                    ].join(',');
+            const scaledScore = (score + 0.2) * 100;
+
+            return isNaN(scaledScore) ? 0 : scaledScore;
+        }
+
+        function updateCharts() {
+            const selectedBots = allBotsData.filter(bot => selectedBotsForCharts.includes(bot.bot_id));
+            createBarCharts(selectedBots);
+            updateRiskPerformanceRadar(selectedBots, document.getElementById('performance-toggle').checked ? 'backtest' : 'live');
+            createNewCharts(selectedBots);
+            createQuarterlyChart(selectedBots);
+        }
+
+        function exportTableToCSV() {
+            const isBacktest = document.getElementById('table-data-toggle').checked;
+            const headers = Array.from(document.querySelectorAll('#main-table-head th')).map(th => th.innerText.trim()).slice(0, -1);
+
+            const rows = allBotsData.map(bot => {
+                const perfKey = isBacktest ? 'backtest_performance' : 'live_performance';
+                const expectKey = isBacktest ? 'backtest_bot_expectation' : 'live_bot_expectation';
+                return [
+                    bot.rank,
+                    bot.score.toFixed(2),
+                    bot.bot_name,
+                    bot[expectKey]?.['expected_avg_return (%)']?.toFixed(2) ?? 'N/A',
+                    bot[perfKey]?.['Return (%)']?.toFixed(2) ?? 'N/A',
+                    bot[perfKey]?.['Number of Trades'] ?? 'N/A',
+                    bot[perfKey]?.['Market Change (%)']?.toFixed(2) ?? 'N/A',
+                    bot[perfKey]?.['Worst Expected Drawdown (%)']?.toFixed(2) ?? 'N/A',
+                    bot[perfKey]?.['Maximum Recovery Time (Days)'] ?? 'N/A',
+                    parseInt(bot[perfKey]?.['Number of Execution Days']) || 'N/A',
+                    bot[perfKey]?.['Average Position’s Duration'] ?? 'N/A',
+                ].join(',');
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "crypto_bot_data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- INITIALIZATION AND EVENT LISTENERS ---
+        async function initializeDashboard() {
+            try {
+                const [rawBotsData, fetchedReportData] = await Promise.all([fetchBotData(), fetchReportData()]);
+                reportData = fetchedReportData;
+
+                const uniqueBotsMap = new Map();
+                rawBotsData.forEach((bot, index) => {
+                    bot.bot_id = `bot_${index}`;
+                    const existingBot = uniqueBotsMap.get(bot.bot_name);
+                    const currentReturn = bot.live_bot_expectation?.['expected_avg_return (%)'] || -Infinity;
+                    if (!existingBot || currentReturn > (existingBot.live_bot_expectation?.['expected_avg_return (%)'] || -Infinity)) {
+                        uniqueBotsMap.set(bot.bot_name, bot);
+                    }
+                });
+                allBotsData = Array.from(uniqueBotsMap.values());
+
+                // Pre-calculate MinMax for ranking
+                const rankingMetricKeys = ['monthlyReturn', 'sharpeRatio', 'calmarRatio', 'timeInMarket', 'maxDrawdown', 'recoveryTime'];
+                const rankingMinMax = rankingMetricKeys.reduce((acc, key) => {
+                    const values = allBotsData.map(b => {
+                        if (key === 'monthlyReturn') return parseFloat(b.live_bot_expectation?.['expected_avg_return (%)']) || 0;
+                        if (key === 'sharpeRatio') return parseFloat(b.live_performance?.['Sharpe Ratio']) || 0;
+                        if (key === 'calmarRatio') return parseFloat(b.live_performance?.['Calmar Ratio']) || 0;
+                        if (key === 'timeInMarket') return parseFloat(b.live_performance?.['Time in Market (%)']) || 0;
+                        if (key === 'maxDrawdown') return parseFloat(b.live_performance?.['Worst Expected Drawdown (%)']) || 0;
+                        if (key === 'recoveryTime') return parseFloat(b.live_performance?.['Maximum Recovery Time (Days)']) || 0;
+                        return 0;
+                    });
+                    acc[key] = { min: Math.min(...values), max: Math.max(...values) };
+                    return acc;
+                }, {});
+
+                allBotsData.forEach(bot => bot.score = calculateRankingScore(bot, rankingMinMax));
+                allBotsData.sort((a, b) => b.score - a.score);
+                allBotsData.forEach((bot, index) => bot.rank = index + 1);
+
+                // Pre-calculate MinMax for detail radar chart
+                const detailMetricConfigs = [
+                    { key: 'expected_avg_return (%)', abs: false }, { key: 'Sharpe Ratio', abs: false },
+                    { key: 'Win Rate (%)', abs: false }, { key: 'Max Drawdown (%)', abs: true },
+                    { key: 'Maximum Recovery Time (Days)', abs: true }
+                ];
+
+                detailMetricConfigs.forEach(config => {
+                    const values = allBotsData.flatMap(bot => [
+                        (bot.live_performance[config.key] ?? bot.live_bot_expectation[config.key]) || 0,
+                        (bot.backtest_performance[config.key] ?? bot.backtest_bot_expectation[config.key]) || 0
+                    ]).map(v => parseFloat(v) || 0).map(v => config.abs ? Math.abs(v) : v);
+                    globalMetricsMinMax[config.key] = { min: Math.min(...values), max: Math.max(...values) };
                 });
 
-                const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
-                const encodedUri = encodeURI(csvContent);
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", "crypto_bot_data.csv");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-
-            // --- INITIALIZATION AND EVENT LISTENERS ---
-            async function initializeDashboard() {
-                try {
-                    const [rawBotsData, fetchedReportData] = await Promise.all([fetchBotData(), fetchReportData()]);
-                    reportData = fetchedReportData;
-
-                    const uniqueBotsMap = new Map();
-                    rawBotsData.forEach((bot, index) => {
-                        bot.bot_id = `bot_${index}`;
-                        const existingBot = uniqueBotsMap.get(bot.bot_name);
-                        const currentReturn = bot.live_bot_expectation?.['expected_avg_return (%)'] || -Infinity;
-                        if (!existingBot || currentReturn > (existingBot.live_bot_expectation?.['expected_avg_return (%)'] || -Infinity)) {
-                            uniqueBotsMap.set(bot.bot_name, bot);
-                        }
-                    });
-                    allBotsData = Array.from(uniqueBotsMap.values());
-
-                    // Pre-calculate MinMax for ranking
-                    const rankingMetricKeys = ['monthlyReturn', 'sharpeRatio', 'calmarRatio', 'timeInMarket', 'maxDrawdown', 'recoveryTime'];
-                    const rankingMinMax = rankingMetricKeys.reduce((acc, key) => {
-                        const values = allBotsData.map(b => {
-                            if (key === 'monthlyReturn') return parseFloat(b.live_bot_expectation?.['expected_avg_return (%)']) || 0;
-                            if (key === 'sharpeRatio') return parseFloat(b.live_performance?.['Sharpe Ratio']) || 0;
-                            if (key === 'calmarRatio') return parseFloat(b.live_performance?.['Calmar Ratio']) || 0;
-                            if (key === 'timeInMarket') return parseFloat(b.live_performance?.['Time in Market (%)']) || 0;
-                            if (key === 'maxDrawdown') return parseFloat(b.live_performance?.['Worst Expected Drawdown (%)']) || 0;
-                            if (key === 'recoveryTime') return parseFloat(b.live_performance?.['Maximum Recovery Time (Days)']) || 0;
-                            return 0;
-                        });
-                        acc[key] = { min: Math.min(...values), max: Math.max(...values) };
-                        return acc;
-                    }, {});
-
-                    allBotsData.forEach(bot => bot.score = calculateRankingScore(bot, rankingMinMax));
-                    allBotsData.sort((a, b) => b.score - a.score);
-                    allBotsData.forEach((bot, index) => bot.rank = index + 1);
-
-                    // Pre-calculate MinMax for detail radar chart
-                    const detailMetricConfigs = [
-                        { key: 'expected_avg_return (%)', abs: false }, { key: 'Sharpe Ratio', abs: false },
-                        { key: 'Win Rate (%)', abs: false }, { key: 'Max Drawdown (%)', abs: true },
-                        { key: 'Maximum Recovery Time (Days)', abs: true }
-                    ];
-
-                    detailMetricConfigs.forEach(config => {
-                        const values = allBotsData.flatMap(bot => [
-                            (bot.live_performance[config.key] ?? bot.live_bot_expectation[config.key]) || 0,
-                            (bot.backtest_performance[config.key] ?? bot.backtest_bot_expectation[config.key]) || 0
-                        ]).map(v => parseFloat(v) || 0).map(v => config.abs ? Math.abs(v) : v);
-                        globalMetricsMinMax[config.key] = { min: Math.min(...values), max: Math.max(...values) };
-                    });
-                    
-                    const botSelectorContainer = document.getElementById('bot-selector-container');
-                    allBotsData.forEach(bot => {
-                        const checkboxId = `bot-checkbox-${bot.bot_id}`;
-                        const wrapper = document.createElement('div');
-                        wrapper.classList.add('flex', 'items-center');
-                        wrapper.innerHTML = `
+                const botSelectorContainer = document.getElementById('bot-selector-container');
+                allBotsData.forEach(bot => {
+                    const checkboxId = `bot-checkbox-${bot.bot_id}`;
+                    const wrapper = document.createElement('div');
+                    wrapper.classList.add('flex', 'items-center');
+                    wrapper.innerHTML = `
                             <input id="${checkboxId}" value="${bot.bot_id}" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                             <label for="${checkboxId}" class="ml-2 block text-sm text-gray-900 truncate" title="${bot.bot_name}">${bot.rank}. ${bot.bot_name}</label>
                         `;
-                        botSelectorContainer.appendChild(wrapper);
-                    });
+                    botSelectorContainer.appendChild(wrapper);
+                });
 
-                    selectedBotsForCharts = allBotsData.slice(0, 10).map(b => b.bot_id);
-                    selectedBotsForCharts.forEach(botId => {
-                        document.getElementById(`bot-checkbox-${botId}`).checked = true;
-                    });
+                selectedBotsForCharts = allBotsData.slice(0, 10).map(b => b.bot_id);
+                selectedBotsForCharts.forEach(botId => {
+                    document.getElementById(`bot-checkbox-${botId}`).checked = true;
+                });
 
-                    botSelectorContainer.addEventListener('change', (e) => {
-                        if (e.target.type === 'checkbox') {
-                            const checkedCheckboxes = botSelectorContainer.querySelectorAll('input[type="checkbox"]:checked');
-                            if (checkedCheckboxes.length > 10) {
-                                alert('You can select a maximum of 10 bots.');
-                                e.target.checked = false;
-                                return;
-                            }
-                            selectedBotsForCharts = Array.from(checkedCheckboxes).map(cb => cb.value);
-                            updateCharts();
+                botSelectorContainer.addEventListener('change', (e) => {
+                    if (e.target.type === 'checkbox') {
+                        const checkedCheckboxes = botSelectorContainer.querySelectorAll('input[type="checkbox"]:checked');
+                        if (checkedCheckboxes.length > 10) {
+                            alert('You can select a maximum of 10 bots.');
+                            e.target.checked = false;
+                            return;
                         }
-                    });
-
-                    document.getElementById('start-date').value = '2025-01-01';
-                    document.getElementById('end-date').value = new Date().toISOString().split('T')[0];
-
-                    updateCharts();
-                    render();
-                    
-                    document.getElementById('export-csv-btn').addEventListener('click', exportTableToCSV);
-                    document.getElementById('apply-filter-btn').addEventListener('click', updateCharts);
-                    document.getElementById('bot-search').addEventListener('input', () => {
-                        currentPage = 1;
-                        render();
-                    });
-                    document.getElementById('table-data-toggle').addEventListener('change', render);
-
-                    document.getElementById('main-table-head').addEventListener('click', (e) => {
-                        const header = e.target.closest('.sortable');
-                        if (!header) return;
-
-                        const key = header.dataset.sortKey;
-                        if (currentSort.key === key) {
-                            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-                        } else {
-                            currentSort.key = key;
-                            currentSort.direction = 'asc';
-                        }
-                        
-                        document.querySelectorAll('#main-table-head .sortable').forEach(th => th.removeAttribute('data-sort-dir'));
-                        header.setAttribute('data-sort-dir', currentSort.direction);
-                        currentPage = 1;
-                        render();
-                    });
-
-                    document.getElementById('bots-table-body').addEventListener('click', (e) => {
-                        const button = e.target.closest('.view-details-btn');
-                        if (button) {
-                            openModal(button.dataset.botId);
-                        }
-                    });
-
-                    document.getElementById('performance-toggle').addEventListener('change', (e) => {
-                        const mode = e.target.checked ? 'backtest' : 'live';
-                        const selectedBots = allBotsData.filter(bot => selectedBotsForCharts.includes(bot.bot_id));
-                        updateRiskPerformanceRadar(selectedBots, mode);
-                    });
-                    
-                    document.getElementById('pagination-controls').addEventListener('click', (e) => {
-                        if (e.target.id === 'prev-page') {
-                            currentPage--;
-                        } else if (e.target.id === 'next-page') {
-                            currentPage++;
-                        } else if (e.target.dataset.page) {
-                            currentPage = parseInt(e.target.dataset.page);
-                        }
-                        render();
-                    });
-
-                } catch (error) {
-                    console.error("Failed to initialize dashboard:", error);
-                    document.body.innerHTML = `<div class="text-center p-8"><h2 class="text-2xl text-red-600">Error Loading Data</h2><p>${error.message}</p><p>Please ensure the JSON and Markdown files are in the same directory and your browser can access them.</p></div>`;
-                } finally {
-                    document.getElementById('loading-overlay').style.display = 'none';
-                }
-            }
-            
-            function periodToDate(period) {
-                if (!period) return new Date(0);
-                if (period.includes('Q')) {
-                    const [year, quarter] = period.split('-Q');
-                    const month = (parseInt(quarter) - 1) * 3 + 1;
-                    return new Date(year, month - 1, 1);
-                }
-                if (period.includes('/')) {
-                    return new Date(period.split('/')[0]);
-                }
-                if (/^\d{4}$/.test(period)) {
-                    return new Date(period, 0, 1);
-                }
-                return new Date(0); // Invalid date
-            }
-
-            async function createQuarterlyChart(bots) {
-                destroyChart('quarterlyPerformanceChart');
-
-                const timeframe = document.getElementById('timeframe-selector').value;
-                const startDateStr = document.getElementById('start-date').value;
-                const endDateStr = document.getElementById('end-date').value;
-                const isBacktest = document.getElementById('quarterly-data-toggle').checked;
-                const reportKey = isBacktest ? 'backtest_quarterly_report' : 'live_quarterly_report';
-
-                const startDate = startDateStr ? new Date(startDateStr) : null;
-                const endDate = endDateStr ? new Date(endDateStr) : null;
-
-                let allLabels = new Set();
-                const datasets = bots.map((bot, index) => {
-                    if (!bot[reportKey] || !Array.isArray(bot[reportKey])) return null;
-
-                    const filteredAndSortedReports = bot[reportKey]
-                        .map(report => ({...report, date: periodToDate(report['Time Period'] || report['Time Periods'])}))
-                        .filter(report => {
-                            const period = report['Time Period'] || report['Time Periods'];
-                            if (!period) return false;
-
-                            let periodType;
-                            if (period.includes('Q')) periodType = 'quarterly';
-                            else if (period.includes('/')) periodType = 'weekly';
-                            else if (/^\d{4}$/.test(period)) periodType = 'yearly';
-                            
-                            if (periodType !== timeframe) return false;
-                            
-                            if (startDate && report.date < startDate) return false;
-                            if (endDate && report.date > endDate) return false;
-
-                            return true;
-                        })
-                        .sort((a, b) => a.date - b.date);
-
-                    let cumulativeReturn = 0;
-                    const data = filteredAndSortedReports.map(report => {
-                        const period = report['Time Period'] || report['Time Periods'];
-                        allLabels.add(period);
-                        const returnValue = report['Initial Capital Return (%)'] || report['∑ Profit (%)'] || 0;
-                        cumulativeReturn += returnValue;
-                        return {
-                            x: period,
-                            y: cumulativeReturn
-                        };
-                    });
-
-                    const color = `hsl(${(index * 360 / bots.length)}, 70%, 50%)`;
-                    return {
-                        label: bot.bot_name,
-                        data: data,
-                        borderColor: color,
-                        backgroundColor: `hsla(${(index * 360 / bots.length)}, 70%, 50%, 0.2)`,
-                        fill: false,
-                        tension: 0.1,
-                        yAxisID: 'y'
-                    };
-                }).filter(Boolean);
-
-                const sortedLabels = Array.from(allLabels).sort((a, b) => periodToDate(a) - periodToDate(b));
-
-                try {
-                    const fromTimestamp = (startDate || new Date('2025-01-01')).getTime() / 1000;
-                    const toTimestamp = (endDate || new Date()).getTime() / 1000;
-
-                    const marketCapResponse = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`);
-                    const marketCapData = await marketCapResponse.json();
-                    
-                    if (marketCapData && Array.isArray(marketCapData.market_caps)) {
-                        const marketCapDataset = {
-                            label: 'Bitcoin Index',
-                            data: [],
-                            borderColor: 'rgba(54, 54, 54, 1)',
-                            backgroundColor: 'rgba(54, 54, 54, 0.2)',
-                            fill: false,
-                            tension: 0.1,
-                            yAxisID: 'y',
-                            borderDash: [5, 5],
-                            pointRadius: 4,
-                            pointBackgroundColor: 'rgba(54, 54, 54, 1)'
-                        };
-
-                        const processedMarketCap = {};
-                        marketCapData.market_caps.forEach(([timestamp, value]) => {
-                            const date = new Date(timestamp);
-                            let key;
-                            if (timeframe === 'quarterly') {
-                                const quarter = Math.floor(date.getMonth() / 3) + 1;
-                                key = `${date.getFullYear()}-Q${quarter}`;
-                            } else if (timeframe === 'yearly') {
-                                key = `${date.getFullYear()}`;
-                            } else {
-                                const startOfWeek = new Date(date);
-                                startOfWeek.setHours(0,0,0,0);
-                                startOfWeek.setDate(date.getDate() - date.getDay());
-                                key = `${startOfWeek.getFullYear()}/${(startOfWeek.getMonth() + 1).toString().padStart(2, '0')}/${startOfWeek.getDate().toString().padStart(2, '0')}`;
-                            }
-                            if(!processedMarketCap[key]) {
-                               processedMarketCap[key] = value;
-                            }
-                        });
-                        
-                        let initialMarketCap = null;
-                        sortedLabels.forEach(label => {
-                            const currentMarketCap = processedMarketCap[label];
-                            if (currentMarketCap) {
-                                if (initialMarketCap === null) {
-                                    initialMarketCap = currentMarketCap;
-                                }
-                                const percentageChange = ((currentMarketCap - initialMarketCap) / initialMarketCap) * 100;
-                                marketCapDataset.data.push({
-                                    x: label,
-                                    y: percentageChange
-                                });
-                            } else {
-                                marketCapDataset.data.push({ x: label, y: null });
-                            }
-                        });
-
-                        datasets.push(marketCapDataset);
-                    } else {
-                        console.error("Market cap data from API is missing or not in the expected format.", marketCapData);
-                    }
-
-                } catch (error) {
-                    console.error("Could not fetch market cap data:", error);
-                }
-
-
-                const ctx = document.getElementById('quarterlyPerformanceChart').getContext('2d');
-                chartInstances.quarterlyPerformanceChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: sortedLabels,
-                        datasets: datasets
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { position: 'bottom' } },
-                        scales: {
-                            x: { title: { display: true, text: 'Time Period' } },
-                            y: { 
-                                title: { display: true, text: 'Cumulative Return (%)' },
-                                position: 'left'
-                            }
-                        }
+                        selectedBotsForCharts = Array.from(checkedCheckboxes).map(cb => cb.value);
+                        updateCharts();
                     }
                 });
+
+                document.getElementById('start-date').value = '2025-01-01';
+                document.getElementById('end-date').value = new Date().toISOString().split('T')[0];
+
+                updateCharts();
+                render();
+
+                document.getElementById('export-csv-btn').addEventListener('click', exportTableToCSV);
+                document.getElementById('apply-filter-btn').addEventListener('click', updateCharts);
+                document.getElementById('bot-search').addEventListener('input', () => {
+                    currentPage = 1;
+                    render();
+                });
+                document.getElementById('table-data-toggle').addEventListener('change', render);
+
+                document.getElementById('main-table-head').addEventListener('click', (e) => {
+                    const header = e.target.closest('.sortable');
+                    if (!header) return;
+
+                    const key = header.dataset.sortKey;
+                    if (currentSort.key === key) {
+                        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        currentSort.key = key;
+                        currentSort.direction = 'asc';
+                    }
+
+                    document.querySelectorAll('#main-table-head .sortable').forEach(th => th.removeAttribute('data-sort-dir'));
+                    header.setAttribute('data-sort-dir', currentSort.direction);
+                    currentPage = 1;
+                    render();
+                });
+
+                document.getElementById('bots-table-body').addEventListener('click', (e) => {
+                    const button = e.target.closest('.view-details-btn');
+                    if (button) {
+                        openModal(button.dataset.botId);
+                    }
+                });
+
+                document.getElementById('performance-toggle').addEventListener('change', (e) => {
+                    const mode = e.target.checked ? 'backtest' : 'live';
+                    const selectedBots = allBotsData.filter(bot => selectedBotsForCharts.includes(bot.bot_id));
+                    updateRiskPerformanceRadar(selectedBots, mode);
+                });
+
+                document.getElementById('pagination-controls').addEventListener('click', (e) => {
+                    if (e.target.id === 'prev-page') {
+                        currentPage--;
+                    } else if (e.target.id === 'next-page') {
+                        currentPage++;
+                    } else if (e.target.dataset.page) {
+                        currentPage = parseInt(e.target.dataset.page);
+                    }
+                    render();
+                });
+
+            } catch (error) {
+                console.error("Failed to initialize dashboard:", error);
+                document.body.innerHTML = `<div class="text-center p-8"><h2 class="text-2xl text-red-600">Error Loading Data</h2><p>${error.message}</p><p>Please ensure the JSON and Markdown files are in the same directory and your browser can access them.</p></div>`;
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        }
+
+        function periodToDate(period) {
+            if (!period) return new Date(0);
+            if (period.includes('Q')) {
+                const [year, quarter] = period.split('-Q');
+                const month = (parseInt(quarter) - 1) * 3 + 1;
+                return new Date(year, month - 1, 1);
+            }
+            if (period.includes('/')) {
+                return new Date(period.split('/')[0]);
+            }
+            if (/^\d{4}$/.test(period)) {
+                return new Date(period, 0, 1);
+            }
+            return new Date(0); // Invalid date
+        }
+
+        async function createQuarterlyChart(bots) {
+            destroyChart('quarterlyPerformanceChart');
+
+            const timeframe = document.getElementById('timeframe-selector').value;
+            const startDateStr = document.getElementById('start-date').value;
+            const endDateStr = document.getElementById('end-date').value;
+            const isBacktest = document.getElementById('quarterly-data-toggle').checked;
+            const reportKey = isBacktest ? 'backtest_quarterly_report' : 'live_quarterly_report';
+
+            const startDate = startDateStr ? new Date(startDateStr) : null;
+            const endDate = endDateStr ? new Date(endDateStr) : null;
+
+            let allLabels = new Set();
+            const datasets = bots.map((bot, index) => {
+                if (!bot[reportKey] || !Array.isArray(bot[reportKey])) return null;
+
+                const filteredAndSortedReports = bot[reportKey]
+                    .map(report => ({...report, date: periodToDate(report['Time Period'] || report['Time Periods'])}))
+                    .filter(report => {
+                        const period = report['Time Period'] || report['Time Periods'];
+                        if (!period) return false;
+
+                        let periodType;
+                        if (period.includes('Q')) periodType = 'quarterly';
+                        else if (period.includes('/')) periodType = 'weekly';
+                        else if (/^\d{4}$/.test(period)) periodType = 'yearly';
+
+                        if (periodType !== timeframe) return false;
+
+                        if (startDate && report.date < startDate) return false;
+                        if (endDate && report.date > endDate) return false;
+
+                        return true;
+                    })
+                    .sort((a, b) => a.date - b.date);
+
+                let cumulativeReturn = 0;
+                const data = filteredAndSortedReports.map(report => {
+                    const period = report['Time Period'] || report['Time Periods'];
+                    allLabels.add(period);
+                    const returnValue = report['Initial Capital Return (%)'] || report['∑ Profit (%)'] || 0;
+                    cumulativeReturn += returnValue;
+                    return {
+                        x: period,
+                        y: cumulativeReturn
+                    };
+                });
+
+                const color = `hsl(${(index * 360 / bots.length)}, 70%, 50%)`;
+                return {
+                    label: bot.bot_name,
+                    data: data,
+                    borderColor: color,
+                    backgroundColor: `hsla(${(index * 360 / bots.length)}, 70%, 50%, 0.2)`,
+                    fill: false,
+                    tension: 0.1,
+                    yAxisID: 'y'
+                };
+            }).filter(Boolean);
+
+            const sortedLabels = Array.from(allLabels).sort((a, b) => periodToDate(a) - periodToDate(b));
+
+            try {
+                const fromTimestamp = (startDate || new Date('2025-01-01')).getTime() / 1000;
+                const toTimestamp = (endDate || new Date()).getTime() / 1000;
+
+                const marketCapResponse = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`);
+                const marketCapData = await marketCapResponse.json();
+
+                if (marketCapData && Array.isArray(marketCapData.market_caps)) {
+                    const marketCapDataset = {
+                        label: 'Bitcoin Index',
+                        data: [],
+                        borderColor: 'rgba(54, 54, 54, 1)',
+                        backgroundColor: 'rgba(54, 54, 54, 0.2)',
+                        fill: false,
+                        tension: 0.1,
+                        yAxisID: 'y',
+                        borderDash: [5, 5],
+                        pointRadius: 4,
+                        pointBackgroundColor: 'rgba(54, 54, 54, 1)'
+                    };
+
+                    const processedMarketCap = {};
+                    marketCapData.market_caps.forEach(([timestamp, value]) => {
+                        const date = new Date(timestamp);
+                        let key;
+                        if (timeframe === 'quarterly') {
+                            const quarter = Math.floor(date.getMonth() / 3) + 1;
+                            key = `${date.getFullYear()}-Q${quarter}`;
+                        } else if (timeframe === 'yearly') {
+                            key = `${date.getFullYear()}`;
+                        } else {
+                            const startOfWeek = new Date(date);
+                            startOfWeek.setHours(0,0,0,0);
+                            startOfWeek.setDate(date.getDate() - date.getDay());
+                            key = `${startOfWeek.getFullYear()}/${(startOfWeek.getMonth() + 1).toString().padStart(2, '0')}/${startOfWeek.getDate().toString().padStart(2, '0')}`;
+                        }
+                        if(!processedMarketCap[key]) {
+                            processedMarketCap[key] = value;
+                        }
+                    });
+
+                    let initialMarketCap = null;
+                    sortedLabels.forEach(label => {
+                        const currentMarketCap = processedMarketCap[label];
+                        if (currentMarketCap) {
+                            if (initialMarketCap === null) {
+                                initialMarketCap = currentMarketCap;
+                            }
+                            const percentageChange = ((currentMarketCap - initialMarketCap) / initialMarketCap) * 100;
+                            marketCapDataset.data.push({
+                                x: label,
+                                y: percentageChange
+                            });
+                        } else {
+                            marketCapDataset.data.push({ x: label, y: null });
+                        }
+                    });
+
+                    datasets.push(marketCapDataset);
+                } else {
+                    console.error("Market cap data from API is missing or not in the expected format.", marketCapData);
+                }
+
+            } catch (error) {
+                console.error("Could not fetch market cap data:", error);
             }
 
-            document.querySelector('.modal-overlay').addEventListener('click', closeModal);
-            document.querySelectorAll('.modal-close').forEach(el => el.addEventListener('click', closeModal));
-            document.addEventListener('keydown', e => e.key === 'Escape' && closeModal());
 
-            initializeDashboard();
-        });
-    </script>
+            const ctx = document.getElementById('quarterlyPerformanceChart').getContext('2d');
+            chartInstances.quarterlyPerformanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedLabels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: {
+                        x: { title: { display: true, text: 'Time Period' } },
+                        y: {
+                            title: { display: true, text: 'Cumulative Return (%)' },
+                            position: 'left'
+                        }
+                    }
+                }
+            });
+        }
+
+        document.querySelector('.modal-overlay').addEventListener('click', closeModal);
+        document.querySelectorAll('.modal-close').forEach(el => el.addEventListener('click', closeModal));
+        document.addEventListener('keydown', e => e.key === 'Escape' && closeModal());
+
+        initializeDashboard();
+    });
+</script>
 </body>
 </html>
