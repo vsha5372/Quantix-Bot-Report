@@ -112,8 +112,8 @@
         <!-- Ranking Formula Display -->
         <div class="my-6 p-4 bg-white rounded-lg shadow">
             <h3 class="font-bold text-lg mb-2">Bot Ranking Formula</h3>
-            <p class="text-sm text-gray-600">Bots are ranked based on a weighted score calculated from live performance metrics. Each metric is normalized to a 0-100 scale before applying weights.</p>
-            <code class="block bg-gray-100 p-2 rounded mt-2 text-xs">Score = (0.25 * Norm. Monthly Return) + (0.25 * Norm. Sharpe Ratio) + (0.20 * Norm. Calmar Ratio) + (0.10 * Norm. Time in Market) - (0.10 * Norm. Max Drawdown) - (0.10 * Norm. Recovery Time)</code>
+            <p class="text-sm text-gray-600">Bots are ranked based on a weighted score calculated from the Z-scores of live performance metrics. A Z-score indicates how many standard deviations a value is from the mean.</p>
+            <code class="block bg-gray-100 p-2 rounded mt-2 text-xs">Score = (0.30 * Z(Monthly Return)) + (0.30 * Z(Sharpe Ratio)) + (0.20 * Z(Calmar Ratio)) - (0.10 * Z(Max Drawdown)) - (0.10 * Z(Recovery Time))</code>
         </div>
         <div class="my-5 flex justify-between items-center sm:flex-row flex-col">
             <div class="relative">
@@ -140,7 +140,6 @@
                     <thead id="main-table-head">
                     <tr>
                         <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="rank">Rank</th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="score">Score</th>
                         <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="bot_name">Bot Name</th>
                         <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="monthly_return">Monthly Return (%)</th>
                         <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="return">Return (%)</th>
@@ -150,6 +149,7 @@
                         <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="recovery_days">Recovery Days</th>
                         <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="exec_days">Exec. Days</th>
                         <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="avg_duration">Avg. Duration</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable" data-sort-key="score">Score</th>
                         <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100"></th>
                     </tr>
                     </thead>
@@ -164,9 +164,13 @@
         </div>
 
         <!-- Bot Selector for Charts -->
-        <div class="my-8">
-            <label class="block text-lg font-medium text-gray-700 mb-2">Select Bots for Charts (up to 10)</label>
-            <div id="bot-selector-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 border rounded-md bg-white">
+        <div class="my-8 p-4 border rounded-md bg-white">
+            <div class="flex justify-between items-center mb-4">
+                <label class="block text-lg font-medium text-gray-700">Select Bots for Charts (up to 10)</label>
+                <button id="reset-bot-selector" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-md hover:bg-gray-300 text-sm">Reset to Default</button>
+            </div>
+            <input type="text" id="bot-selector-search" placeholder="Search bots..." class="w-full p-2 border rounded-md mb-4">
+            <div id="bot-selector-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-h-60 overflow-y-auto">
                 <!-- Checkboxes will be dynamically inserted here -->
             </div>
         </div>
@@ -223,7 +227,7 @@
         <!-- Quarterly Report Chart -->
         <div class="mt-8 grid grid-cols-1 gap-8">
             <div class="chart-container">
-                <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Quarterly Performance Report</h2>
+                <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Time-Series Performance Report</h2>
                 <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
                     <select id="timeframe-selector" class="rounded-md border-gray-300 shadow-sm">
                         <option value="quarterly">Quarterly</option>
@@ -272,7 +276,7 @@
         let allBotsData = [];
         let reportData = {};
         let chartInstances = {};
-        let globalMetricsMinMax = {};
+        let globalMetricsStats = {};
         let currentSort = { key: 'rank', direction: 'asc' };
         let currentPage = 1;
         const rowsPerPage = 10;
@@ -302,6 +306,22 @@
             return report;
         }
 
+        // --- MATH HELPERS ---
+        function calculateMean(data) {
+            return data.reduce((a, b) => a + b, 0) / data.length;
+        }
+
+        function calculateStdDev(data, mean) {
+            const sqDiff = data.map(n => Math.pow(n - mean, 2));
+            const avgSqDiff = calculateMean(sqDiff);
+            return Math.sqrt(avgSqDiff);
+        }
+
+        function standardize(value, mean, stdDev) {
+            if (stdDev === 0) return 0;
+            return (value - mean) / stdDev;
+        }
+
         // --- UI RENDERING & LOGIC ---
         function populateTable(bots) {
             const tableBody = document.getElementById('bots-table-body');
@@ -324,7 +344,6 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap">${bot.rank}</p></td>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap font-semibold">${bot.score.toFixed(2)}</p></td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap font-semibold">${bot.bot_name}</p></td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap">${monthlyReturn}</p></td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap">${returnValue}%</p></td>
@@ -334,6 +353,7 @@
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap">${recoveryDays}</p></td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap">${execDays}</p></td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap">${avgDuration}</p></td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><p class="text-gray-900 whitespace-no-wrap font-semibold">${bot.score.toFixed(2)}</p></td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-right"><button data-bot-id="${bot.bot_id}" class="view-details-btn text-indigo-600 hover:text-indigo-900 font-semibold">Details</button></td>
                     `;
                 tableBody.appendChild(row);
@@ -394,24 +414,17 @@
                 { label: 'Max Drawdown (%)', key: 'Max Drawdown (%)', source: perfKey, abs: true },
             ];
 
-            const minMaxValues = metrics.map(metric => {
-                const values = bots.map(bot => {
-                    const rawValue = bot[metric.source]?.[metric.key] || 0;
-                    return metric.abs ? Math.abs(rawValue) : rawValue;
-                });
-                return { min: Math.min(...values), max: Math.max(...values) };
-            });
-
             const datasets = bots.map((bot, index) => {
                 const color = `hsl(${(index * 360 / bots.length)}, 70%, 50%)`;
                 const originalData = metrics.map(metric => bot[metric.source]?.[metric.key] || 0);
-                const scaledData = originalData.map((rawValue, i) => {
-                    const { min, max } = minMaxValues[i];
-                    const value = metrics[i].abs ? Math.abs(rawValue) : rawValue;
-                    const range = max - min;
-                    if (range === 0) return 50;
-                    return ((value - min) / range) * 100;
+
+                const scaledData = metrics.map((metric, i) => {
+                    const stats = globalMetricsStats[metric.key];
+                    if (!stats) return 0;
+                    const value = metric.abs ? Math.abs(originalData[i]) : originalData[i];
+                    return standardize(value, stats.mean, stats.stdDev);
                 });
+
                 return {
                     label: bot.bot_name,
                     data: scaledData,
@@ -444,7 +457,7 @@
                             }
                         }
                     },
-                    scales: { r: { beginAtZero: true, min: 0, max: 100 } }
+                    scales: { r: { beginAtZero: false } } // Z-scores can be negative
                 }
             });
         }
@@ -602,21 +615,20 @@
                 return sourceObj?.[m.key] || 0;
             });
 
-            // Use pre-calculated global min/max for scaling
             const scaledLiveData = liveData.map((val, i) => {
-                const metricKey = metrics[i].key;
-                const { min, max } = globalMetricsMinMax[metricKey];
-                const value = metrics[i].abs ? Math.abs(val) : val;
-                const range = max - min;
-                return range === 0 ? 50 : ((value - min) / range) * 100;
+                const metricConfig = metrics[i];
+                const stats = globalMetricsStats[metricConfig.key];
+                if (!stats) return 0;
+                const value = metricConfig.abs ? Math.abs(val) : val;
+                return standardize(value, stats.mean, stats.stdDev);
             });
 
             const scaledBacktestData = backtestData.map((val, i) => {
-                const metricKey = metrics[i].key;
-                const { min, max } = globalMetricsMinMax[metricKey];
-                const value = metrics[i].abs ? Math.abs(val) : val;
-                const range = max - min;
-                return range === 0 ? 50 : ((value - min) / range) * 100;
+                const metricConfig = metrics[i];
+                const stats = globalMetricsStats[metricConfig.key];
+                if (!stats) return 0;
+                const value = metricConfig.abs ? Math.abs(val) : val;
+                return standardize(value, stats.mean, stats.stdDev);
             });
 
             chartInstances.detailRadarChart = new Chart(ctx, {
@@ -656,7 +668,7 @@
                             }
                         }
                     },
-                    scales: { r: { beginAtZero: true, min: 0, max: 100 } }
+                    scales: { r: { beginAtZero: false } }
                 }
             });
         }
@@ -748,12 +760,11 @@
                 `;
         }
 
-        function calculateRankingScore(bot, minMaxData) {
+        function calculateRankingScore(bot, stats) {
             const weights = {
-                monthlyReturn: 0.25,
-                sharpeRatio: 0.25,
+                monthlyReturn: 0.30,
+                sharpeRatio: 0.30,
                 calmarRatio: 0.20,
-                timeInMarket: 0.10,
                 maxDrawdown: -0.10,
                 recoveryTime: -0.10,
             };
@@ -762,33 +773,19 @@
                 monthlyReturn: 'live_bot_expectation.expected_avg_return (%)',
                 sharpeRatio: 'live_performance.Sharpe Ratio',
                 calmarRatio: 'live_performance.Calmar Ratio',
-                timeInMarket: 'live_performance.Time in Market (%)',
                 maxDrawdown: 'live_performance.Worst Expected Drawdown (%)',
                 recoveryTime: 'live_performance.Maximum Recovery Time (Days)',
             };
 
-            const metrics = {};
-            for (const key in metricPaths) {
-                const path = metricPaths[key];
-                const rawValue = path.split('.').reduce((o, k) => (o || {})[k], bot);
-                metrics[key] = parseFloat(rawValue) || 0;
-            }
-
-            const normalized = {};
-            for (const key in metrics) {
-                const { min, max } = minMaxData[key];
-                const range = max - min;
-                normalized[key] = range === 0 ? 0 : (metrics[key] - min) / range;
-            }
-
             let score = 0;
             for (const key in weights) {
-                score += (normalized[key] * weights[key]);
+                const path = metricPaths[key];
+                const rawValue = parseFloat(path.split('.').reduce((o, k) => (o || {})[k], bot)) || 0;
+                const zScore = standardize(rawValue, stats[key].mean, stats[key].stdDev);
+                score += (zScore * weights[key]);
             }
 
-            const scaledScore = (score + 0.2) * 100;
-
-            return isNaN(scaledScore) ? 0 : scaledScore;
+            return isNaN(score) ? 0 : score;
         }
 
         function updateCharts() {
@@ -808,7 +805,6 @@
                 const expectKey = isBacktest ? 'backtest_bot_expectation' : 'live_bot_expectation';
                 return [
                     bot.rank,
-                    bot.score.toFixed(2),
                     bot.bot_name,
                     bot[expectKey]?.['expected_avg_return (%)']?.toFixed(2) ?? 'N/A',
                     bot[perfKey]?.['Return (%)']?.toFixed(2) ?? 'N/A',
@@ -818,6 +814,7 @@
                     bot[perfKey]?.['Maximum Recovery Time (Days)'] ?? 'N/A',
                     parseInt(bot[perfKey]?.['Number of Execution Days']) || 'N/A',
                     bot[perfKey]?.['Average Position’s Duration'] ?? 'N/A',
+                    bot.score.toFixed(2),
                 ].join(',');
             });
 
@@ -848,27 +845,27 @@
                 });
                 allBotsData = Array.from(uniqueBotsMap.values());
 
-                // Pre-calculate MinMax for ranking
-                const rankingMetricKeys = ['monthlyReturn', 'sharpeRatio', 'calmarRatio', 'timeInMarket', 'maxDrawdown', 'recoveryTime'];
-                const rankingMinMax = rankingMetricKeys.reduce((acc, key) => {
+                // Pre-calculate Mean and StdDev for ranking and scaling
+                const rankingMetricKeys = ['monthlyReturn', 'sharpeRatio', 'calmarRatio', 'maxDrawdown', 'recoveryTime'];
+                const rankingStats = rankingMetricKeys.reduce((acc, key) => {
                     const values = allBotsData.map(b => {
                         if (key === 'monthlyReturn') return parseFloat(b.live_bot_expectation?.['expected_avg_return (%)']) || 0;
                         if (key === 'sharpeRatio') return parseFloat(b.live_performance?.['Sharpe Ratio']) || 0;
                         if (key === 'calmarRatio') return parseFloat(b.live_performance?.['Calmar Ratio']) || 0;
-                        if (key === 'timeInMarket') return parseFloat(b.live_performance?.['Time in Market (%)']) || 0;
                         if (key === 'maxDrawdown') return parseFloat(b.live_performance?.['Worst Expected Drawdown (%)']) || 0;
                         if (key === 'recoveryTime') return parseFloat(b.live_performance?.['Maximum Recovery Time (Days)']) || 0;
                         return 0;
                     });
-                    acc[key] = { min: Math.min(...values), max: Math.max(...values) };
+                    const mean = calculateMean(values);
+                    acc[key] = { mean: mean, stdDev: calculateStdDev(values, mean) };
                     return acc;
                 }, {});
 
-                allBotsData.forEach(bot => bot.score = calculateRankingScore(bot, rankingMinMax));
+                allBotsData.forEach(bot => bot.score = calculateRankingScore(bot, rankingStats));
                 allBotsData.sort((a, b) => b.score - a.score);
                 allBotsData.forEach((bot, index) => bot.rank = index + 1);
 
-                // Pre-calculate MinMax for detail radar chart
+                // Pre-calculate stats for all radar chart metrics
                 const detailMetricConfigs = [
                     { key: 'expected_avg_return (%)', abs: false }, { key: 'Sharpe Ratio', abs: false },
                     { key: 'Win Rate (%)', abs: false }, { key: 'Max Drawdown (%)', abs: true },
@@ -880,14 +877,15 @@
                         (bot.live_performance[config.key] ?? bot.live_bot_expectation[config.key]) || 0,
                         (bot.backtest_performance[config.key] ?? bot.backtest_bot_expectation[config.key]) || 0
                     ]).map(v => parseFloat(v) || 0).map(v => config.abs ? Math.abs(v) : v);
-                    globalMetricsMinMax[config.key] = { min: Math.min(...values), max: Math.max(...values) };
+                    const mean = calculateMean(values);
+                    globalMetricsStats[config.key] = { mean: mean, stdDev: calculateStdDev(values, mean) };
                 });
 
                 const botSelectorContainer = document.getElementById('bot-selector-container');
                 allBotsData.forEach(bot => {
                     const checkboxId = `bot-checkbox-${bot.bot_id}`;
                     const wrapper = document.createElement('div');
-                    wrapper.classList.add('flex', 'items-center');
+                    wrapper.classList.add('flex', 'items-center', 'bot-selector-item');
                     wrapper.innerHTML = `
                             <input id="${checkboxId}" value="${bot.bot_id}" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                             <label for="${checkboxId}" class="ml-2 block text-sm text-gray-900 truncate" title="${bot.bot_name}">${bot.rank}. ${bot.bot_name}</label>
@@ -898,6 +896,24 @@
                 selectedBotsForCharts = allBotsData.slice(0, 10).map(b => b.bot_id);
                 selectedBotsForCharts.forEach(botId => {
                     document.getElementById(`bot-checkbox-${botId}`).checked = true;
+                });
+
+                document.getElementById('bot-selector-search').addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    document.querySelectorAll('.bot-selector-item').forEach(item => {
+                        const label = item.querySelector('label').textContent.toLowerCase();
+                        item.style.display = label.includes(searchTerm) ? '' : 'none';
+                    });
+                });
+
+                document.getElementById('reset-bot-selector').addEventListener('click', () => {
+                    document.querySelectorAll('.bot-selector-item input').forEach(cb => cb.checked = false);
+                    selectedBotsForCharts = allBotsData.slice(0, 10).map(b => b.bot_id);
+                    selectedBotsForCharts.forEach(botId => {
+                        const checkbox = document.getElementById(`bot-checkbox-${botId}`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                    updateCharts();
                 });
 
                 botSelectorContainer.addEventListener('change', (e) => {
@@ -979,30 +995,28 @@
 
         function periodToDate(period) {
             if (!period) return new Date(0);
-            // Handles 'YYYY-Q#' and 'YYYYQ#'
-            if (period.includes('Q')) {
-                const match = period.match(/(\d{4})-?Q(\d)/);
-                if (match) {
-                    const year = parseInt(match[1]);
-                    const quarter = parseInt(match[2]);
-                    const month = (quarter - 1) * 3; // Month index 0-11
-                    return new Date(year, month, 1);
-                }
-            }
-            if (period.includes('/')) {
+
+            if (period.includes('/')) { // YYYY/MM/DD format
                 const parts = period.split('/');
-                // Handles YYYY/MM/DD
                 if (parts.length === 3) {
                     return new Date(parts[0], parts[1] - 1, parts[2]);
                 }
             }
-            if (/^\d{4}$/.test(period)) {
+            if (period.includes('Q')) { // YYYY-Q# or YYYYQ# format
+                const match = period.match(/(\d{4})-?Q(\d)/);
+                if (match) {
+                    const year = parseInt(match[1]);
+                    const quarter = parseInt(match[2]);
+                    const month = (quarter - 1) * 3;
+                    return new Date(year, month, 1);
+                }
+            }
+            if (/^\d{4}$/.test(period)) { // YYYY format
                 return new Date(period, 0, 1);
             }
             return new Date(0); // Invalid date
         }
 
-        // --- CORRECTED FUNCTION ---
         async function createQuarterlyChart(bots) {
             destroyChart('quarterlyPerformanceChart');
 
@@ -1014,7 +1028,6 @@
             const startDate = startDateStr ? new Date(startDateStr) : null;
             const endDate = endDateStr ? new Date(endDateStr) : null;
 
-            // 1. Get all unique, valid, and filtered labels from ALL selected bots first.
             let allLabels = new Set();
             bots.forEach(bot => {
                 const reportKey = isBacktest ? 'backtest_quarterly_report' : 'live_quarterly_report';
@@ -1025,11 +1038,11 @@
                     if (!period) return;
 
                     const reportDate = periodToDate(period);
-                    if (reportDate.getTime() === 0) return; // Skip invalid periods
+                    if (reportDate.getTime() === 0) return;
 
                     let periodType;
-                    if (period.includes('Q')) periodType = 'quarterly';
-                    else if (period.includes('/')) periodType = 'weekly';
+                    if (period.includes('/')) periodType = 'weekly';
+                    else if (period.includes('Q')) periodType = 'quarterly';
                     else if (/^\d{4}$/.test(period)) periodType = 'yearly';
 
                     if (periodType !== timeframe) return;
@@ -1041,7 +1054,6 @@
             });
             const sortedLabels = Array.from(allLabels).sort((a, b) => periodToDate(a) - periodToDate(b));
 
-            // 2. Create datasets for each bot, aligning with the master sortedLabels list.
             const datasets = bots.map((bot, index) => {
                 const reportKey = isBacktest ? 'backtest_quarterly_report' : 'live_quarterly_report';
                 if (!bot[reportKey] || !Array.isArray(bot[reportKey])) return null;
@@ -1064,7 +1076,6 @@
                             y: cumulativeReturn
                         };
                     } else {
-                        // If bot's data hasn't started, use null. If it has started, carry forward the last value to fill gaps.
                         return {
                             x: periodToDate(label).getTime(),
                             y: hasStarted ? cumulativeReturn : null
@@ -1084,68 +1095,6 @@
                 };
             }).filter(Boolean);
 
-            // 3. Handle Bitcoin Index
-            try {
-                const fromTimestamp = (startDate || periodToDate(sortedLabels[0] || '2025-01-01')).getTime() / 1000;
-                const toTimestamp = (endDate || new Date()).getTime() / 1000;
-
-                const marketCapResponse = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`);
-                const marketCapData = await marketCapResponse.json();
-
-                if (marketCapData && Array.isArray(marketCapData.market_caps)) {
-                    const marketCapDataset = {
-                        label: 'Bitcoin Index',
-                        data: [],
-                        borderColor: 'rgba(110, 110, 110, 1)',
-                        backgroundColor: 'rgba(110, 110, 110, 0.2)',
-                        fill: false,
-                        tension: 0.1,
-                        yAxisID: 'y',
-                        borderDash: [5, 5],
-                        pointRadius: 4,
-                        pointBackgroundColor: 'rgba(54, 54, 54, 1)'
-                    };
-
-                    const processedMarketCap = {};
-                    marketCapData.market_caps.forEach(([timestamp, value]) => {
-                        const date = new Date(timestamp);
-                        let key;
-                        if (timeframe === 'quarterly') {
-                            const quarter = Math.floor(date.getMonth() / 3) + 1;
-                            key = `${date.getFullYear()}-Q${quarter}`;
-                        } else if (timeframe === 'yearly') {
-                            key = `${date.getFullYear()}`;
-                        } else { // weekly
-                            const startOfWeek = new Date(date.setDate(date.getDate() - date.getDay()));
-                            key = `${startOfWeek.getFullYear()}/${(startOfWeek.getMonth() + 1).toString().padStart(2, '0')}/${startOfWeek.getDate().toString().padStart(2, '0')}`;
-                        }
-                        processedMarketCap[key] = value;
-                    });
-
-                    let initialMarketCap = null;
-                    const btcData = sortedLabels.map(label => {
-                        const lookupKey = (timeframe === 'quarterly' && !label.includes('-'))
-                            ? label.replace('Q', '-Q')
-                            : label;
-
-                        const currentMarketCap = processedMarketCap[lookupKey];
-
-                        if (currentMarketCap) {
-                            if (initialMarketCap === null) initialMarketCap = currentMarketCap;
-                            const percentageChange = ((currentMarketCap - initialMarketCap) / initialMarketCap) * 100;
-                            return { x: periodToDate(label).getTime(), y: percentageChange };
-                        }
-                        return { x: periodToDate(label).getTime(), y: null };
-                    });
-
-                    marketCapDataset.data = btcData;
-                    datasets.push(marketCapDataset);
-                }
-            } catch (error) {
-                console.error("Could not fetch market cap data:", error);
-            }
-
-            // 4. Create the chart with a time scale
             const ctx = document.getElementById('quarterlyPerformanceChart').getContext('2d');
             chartInstances.quarterlyPerformanceChart = new Chart(ctx, {
                 type: 'line',
@@ -1160,7 +1109,7 @@
                             type: 'time',
                             time: {
                                 unit: timeframe === 'weekly' ? 'week' : (timeframe === 'yearly' ? 'year' : 'quarter'),
-                                tooltipFormat: 'PP' // From date-fns: e.g., 'Aug 7, 2025'
+                                tooltipFormat: 'PP'
                             },
                             title: { display: true, text: 'Time Period' }
                         },
