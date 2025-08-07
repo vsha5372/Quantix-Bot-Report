@@ -279,8 +279,8 @@
 
             // --- DATA FETCHING ---
             async function fetchBotData() {
-                const response = await fetch('./top_10_bots.json');
-                if (!response.ok) throw new Error(`Failed to fetch top_10_bots.json: ${response.statusText}`);
+                const response = await fetch('./crypto_bot_summary.json');
+                if (!response.ok) throw new Error(`Failed to fetch crypto_bot_summary.json: ${response.statusText}`);
                 return await response.json();
             }
 
