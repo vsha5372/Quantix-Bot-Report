@@ -4,3 +4,4 @@ reports
 top_10_bots.json
 top_bots.json
 .idea
+.quantix_config.json
