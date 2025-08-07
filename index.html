@@ -279,14 +279,14 @@
 
         // --- DATA FETCHING ---
         async function fetchBotData() {
-            const response = await fetch('./crypto_bot_summary.json');
-            if (!response.ok) throw new Error(`Failed to fetch crypto_bot_summary.json: ${response.statusText}`);
+            const response = await fetch('./top_10_bots.json');
+            if (!response.ok) throw new Error(`Failed to fetch top_10_bots.json: ${response.statusText}`);
             return await response.json();
         }
 
         async function fetchReportData() {
-            const response = await fetch('./unified_bot_report.md');
-            if (!response.ok) throw new Error(`Failed to fetch unified_bot_report.md: ${response.statusText}`);
+            const response = await fetch('./crypto_bot_comparison_report.md');
+            if (!response.ok) throw new Error(`Failed to fetch crypto_bot_comparison_report.md: ${response.statusText}`);
             const markdown = await response.text();
             const report = {};
             const sections = markdown.split(/\n###\s*\d*\.?\s*/).slice(1);
@@ -976,15 +976,21 @@
             }
         }
 
+        // --- CORRECTED FUNCTION ---
         function periodToDate(period) {
             if (!period) return new Date(0);
+            // Handles 'YYYY-Q#' and 'YYYYQ#'
             if (period.includes('Q')) {
-                const [year, quarter] = period.split('-Q');
-                const month = (parseInt(quarter) - 1) * 3 + 1;
-                return new Date(year, month - 1, 1);
+                const match = period.match(/(\d{4})-?Q(\d)/);
+                if (match) {
+                    const year = parseInt(match[1]);
+                    const quarter = parseInt(match[2]);
+                    const month = (quarter - 1) * 3; // Month index 0-11
+                    return new Date(year, month, 1);
+                }
             }
             if (period.includes('/')) {
-                return new Date(period.split('/')[0]);
+                return new Date(period);
             }
             if (/^\d{4}$/.test(period)) {
                 return new Date(period, 0, 1);
@@ -992,6 +998,7 @@
             return new Date(0); // Invalid date
         }
 
+        // --- CORRECTED FUNCTION ---
         async function createQuarterlyChart(bots) {
             destroyChart('quarterlyPerformanceChart');
 
@@ -1065,8 +1072,8 @@
                     const marketCapDataset = {
                         label: 'Bitcoin Index',
                         data: [],
-                        borderColor: 'rgba(54, 54, 54, 1)',
-                        backgroundColor: 'rgba(54, 54, 54, 0.2)',
+                        borderColor: 'rgba(110, 110, 110, 1)',
+                        backgroundColor: 'rgba(110, 110, 110, 0.2)',
                         fill: false,
                         tension: 0.1,
                         yAxisID: 'y',
@@ -1090,21 +1097,26 @@
                             startOfWeek.setDate(date.getDate() - date.getDay());
                             key = `${startOfWeek.getFullYear()}/${(startOfWeek.getMonth() + 1).toString().padStart(2, '0')}/${startOfWeek.getDate().toString().padStart(2, '0')}`;
                         }
-                        if(!processedMarketCap[key]) {
-                            processedMarketCap[key] = value;
-                        }
+                        // By overwriting, we ensure we get the LAST market cap for the period, which is more accurate.
+                        processedMarketCap[key] = value;
                     });
 
                     let initialMarketCap = null;
                     sortedLabels.forEach(label => {
-                        const currentMarketCap = processedMarketCap[label];
+                        // FIX: Normalize the lookup key to 'YYYY-Q#' format to match processed market data.
+                        const lookupKey = (timeframe === 'quarterly' && !label.includes('-'))
+                            ? label.replace('Q', '-Q')
+                            : label;
+
+                        const currentMarketCap = processedMarketCap[lookupKey];
+
                         if (currentMarketCap) {
                             if (initialMarketCap === null) {
                                 initialMarketCap = currentMarketCap;
                             }
                             const percentageChange = ((currentMarketCap - initialMarketCap) / initialMarketCap) * 100;
                             marketCapDataset.data.push({
-                                x: label,
+                                x: label, // Use the original label for the chart's x-axis
                                 y: percentageChange
                             });
                         } else {
