@@ -336,8 +336,10 @@
         }
 
         function getPeriodType(period) {
+            if (typeof period !== 'string') return null;
+            if (/^\d{4}\/\d{2}\/\d{2}\/\d{4}\/\d{2}\/\d{2}$/.test(period)) return 'weekly';
+            if (/^\d{4}-\d{2}-\d{2}\/\d{4}-\d{2}-\d{2}$/.test(period)) return 'weekly';
             if (/^\d{4}-W\d{2}$/.test(period)) return 'weekly';
-            if (/^\d{4}\/\d{2}\/\d{2}\/\d{4}\/\d{2}\/\d{2}$/.test(period)) return 'weekly'; // Handle date range format
             if (/^\d{4}-?Q\d$/.test(period)) return 'quarterly';
             if (/^\d{4}-\d{2}$/.test(period)) return 'monthly';
             if (/^\d{4}$/.test(period)) return 'yearly';
@@ -346,28 +348,29 @@
 
         function periodToDate(period) {
             if (!period) return null;
-            const type = getPeriodType(period);
             try {
-                if (type === 'weekly') {
-                    if (period.includes('/')) {
-                        const [startDate] = period.split('/');
-                        return new Date(startDate.replace(/\//g, '-'));
-                    }
+                if (period.includes('/')) {
+                    const [startDateStr] = period.split('/');
+                    const formattedDate = startDateStr.replace(/\//g, '-');
+                    const date = new Date(formattedDate);
+                    if (!isNaN(date.getTime())) return date;
+                }
+                if (/^\d{4}-W\d{2}$/.test(period)) {
                     const [year, week] = period.split('-W').map(Number);
                     return getDateOfISOWeek(week, year);
                 }
-                if (type === 'quarterly') {
+                if (/^\d{4}-?Q\d$/.test(period)) {
                     const match = period.match(/(\d{4})-?Q(\d)/);
                     const year = parseInt(match[1]);
                     const quarter = parseInt(match[2]);
                     const month = (quarter - 1) * 3;
                     return new Date(year, month, 1);
                 }
-                if (type === 'monthly') {
+                if (/^\d{4}-\d{2}$/.test(period)) {
                     const [year, month] = period.split('-');
                     return new Date(year, parseInt(month) - 1, 1);
                 }
-                if (type === 'yearly') {
+                if (/^\d{4}$/.test(period)) {
                     return new Date(period, 0, 1);
                 }
             } catch (e) {
