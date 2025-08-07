@@ -224,7 +224,7 @@
             </div>
         </div>
 
-        <!-- Quarterly Report Chart -->
+        <!-- Time-Series Report Chart -->
         <div class="mt-8 grid grid-cols-1 gap-8">
             <div class="chart-container">
                 <h2 class="text-xl font-bold leading-tight text-gray-900 mb-4 text-center">Time-Series Performance Report</h2>
@@ -246,7 +246,7 @@
                     </div>
                     <button id="apply-filter-btn" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700">Apply</button>
                 </div>
-                <canvas id="quarterlyPerformanceChart"></canvas>
+                <canvas id="timeSeriesPerformanceChart"></canvas>
             </div>
         </div>
 
@@ -306,12 +306,14 @@
             return report;
         }
 
-        // --- MATH HELPERS ---
+        // --- MATH & DATE HELPERS ---
         function calculateMean(data) {
+            if (!data || data.length === 0) return 0;
             return data.reduce((a, b) => a + b, 0) / data.length;
         }
 
         function calculateStdDev(data, mean) {
+            if (!data || data.length === 0) return 0;
             const sqDiff = data.map(n => Math.pow(n - mean, 2));
             const avgSqDiff = calculateMean(sqDiff);
             return Math.sqrt(avgSqDiff);
@@ -320,6 +322,49 @@
         function standardize(value, mean, stdDev) {
             if (stdDev === 0) return 0;
             return (value - mean) / stdDev;
+        }
+
+        function getDateOfISOWeek(w, y) {
+            const simple = new Date(y, 0, 1 + (w - 1) * 7);
+            const dow = simple.getDay();
+            const ISOweekStart = simple;
+            if (dow <= 4)
+                ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+            else
+                ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+            return ISOweekStart;
+        }
+
+        function getPeriodType(period) {
+            if (/^\d{4}-W\d{2}$/.test(period)) return 'weekly';
+            if (/^\d{4}-?Q\d$/.test(period)) return 'quarterly';
+            if (/^\d{4}$/.test(period)) return 'yearly';
+            return null;
+        }
+
+        function periodToDate(period) {
+            if (!period) return null;
+            const type = getPeriodType(period);
+            try {
+                if (type === 'weekly') {
+                    const [year, week] = period.split('-W').map(Number);
+                    return getDateOfISOWeek(week, year);
+                }
+                if (type === 'quarterly') {
+                    const match = period.match(/(\d{4})-?Q(\d)/);
+                    const year = parseInt(match[1]);
+                    const quarter = parseInt(match[2]);
+                    const month = (quarter - 1) * 3;
+                    return new Date(year, month, 1);
+                }
+                if (type === 'yearly') {
+                    return new Date(period, 0, 1);
+                }
+            } catch (e) {
+                console.error(`Could not parse date for period: ${period}`, e);
+                return null;
+            }
+            return null;
         }
 
         // --- UI RENDERING & LOGIC ---
@@ -793,7 +838,7 @@
             createBarCharts(selectedBots);
             updateRiskPerformanceRadar(selectedBots, document.getElementById('performance-toggle').checked ? 'backtest' : 'live');
             createNewCharts(selectedBots);
-            createQuarterlyChart(selectedBots);
+            createTimeSeriesChart(selectedBots);
         }
 
         function exportTableToCSV() {
@@ -993,32 +1038,8 @@
             }
         }
 
-        function periodToDate(period) {
-            if (!period) return new Date(0);
-
-            if (period.includes('/')) { // YYYY/MM/DD format
-                const parts = period.split('/');
-                if (parts.length === 3) {
-                    return new Date(parts[0], parts[1] - 1, parts[2]);
-                }
-            }
-            if (period.includes('Q')) { // YYYY-Q# or YYYYQ# format
-                const match = period.match(/(\d{4})-?Q(\d)/);
-                if (match) {
-                    const year = parseInt(match[1]);
-                    const quarter = parseInt(match[2]);
-                    const month = (quarter - 1) * 3;
-                    return new Date(year, month, 1);
-                }
-            }
-            if (/^\d{4}$/.test(period)) { // YYYY format
-                return new Date(period, 0, 1);
-            }
-            return new Date(0); // Invalid date
-        }
-
-        async function createQuarterlyChart(bots) {
-            destroyChart('quarterlyPerformanceChart');
+        async function createTimeSeriesChart(bots) {
+            destroyChart('timeSeriesPerformanceChart');
 
             const timeframe = document.getElementById('timeframe-selector').value;
             const startDateStr = document.getElementById('start-date').value;
@@ -1037,21 +1058,19 @@
                     const period = report['Time Period'] || report['Time Periods'];
                     if (!period) return;
 
-                    const reportDate = periodToDate(period);
-                    if (reportDate.getTime() === 0) return;
-
-                    let periodType;
-                    if (period.includes('/')) periodType = 'weekly';
-                    else if (period.includes('Q')) periodType = 'quarterly';
-                    else if (/^\d{4}$/.test(period)) periodType = 'yearly';
-
+                    const periodType = getPeriodType(period);
                     if (periodType !== timeframe) return;
+
+                    const reportDate = periodToDate(period);
+                    if (!reportDate) return;
+
                     if (startDate && reportDate < startDate) return;
                     if (endDate && reportDate > endDate) return;
 
                     allLabels.add(period);
                 });
             });
+
             const sortedLabels = Array.from(allLabels).sort((a, b) => periodToDate(a) - periodToDate(b));
 
             const datasets = bots.map((bot, index) => {
@@ -1067,21 +1086,24 @@
 
                 const data = sortedLabels.map(label => {
                     const report = reportMap.get(label);
+                    const date = periodToDate(label);
+                    if (!date) return null;
+
                     if (report) {
                         hasStarted = true;
                         const returnValue = report['Initial Capital Return (%)'] || report['∑ Profit (%)'] || 0;
                         cumulativeReturn += returnValue;
                         return {
-                            x: periodToDate(label).getTime(),
+                            x: date.getTime(),
                             y: cumulativeReturn
                         };
                     } else {
                         return {
-                            x: periodToDate(label).getTime(),
+                            x: date.getTime(),
                             y: hasStarted ? cumulativeReturn : null
                         };
                     }
-                });
+                }).filter(Boolean);
 
                 const color = `hsl(${(index * 360 / bots.length)}, 70%, 50%)`;
                 return {
@@ -1095,8 +1117,8 @@
                 };
             }).filter(Boolean);
 
-            const ctx = document.getElementById('quarterlyPerformanceChart').getContext('2d');
-            chartInstances.quarterlyPerformanceChart = new Chart(ctx, {
+            const ctx = document.getElementById('timeSeriesPerformanceChart').getContext('2d');
+            chartInstances.timeSeriesPerformanceChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     datasets: datasets
