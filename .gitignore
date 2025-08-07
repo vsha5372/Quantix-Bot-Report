@@ -1,0 +1,6 @@
+quantix_marketplace_data
+reports
+*.py
+top_10_bots.json
+top_bots.json
+.idea
