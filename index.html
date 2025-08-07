@@ -6,6 +6,7 @@
     <title>Crypto Bot Comparison Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -279,14 +280,14 @@
 
         // --- DATA FETCHING ---
         async function fetchBotData() {
-            const response = await fetch('./crypto_bot_summary.json');
-            if (!response.ok) throw new Error(`Failed to fetch crypto_bot_summary.json: ${response.statusText}`);
+            const response = await fetch('./top_10_bots.json');
+            if (!response.ok) throw new Error(`Failed to fetch top_10_bots.json: ${response.statusText}`);
             return await response.json();
         }
 
         async function fetchReportData() {
-            const response = await fetch('./unified_bot_report.md');
-            if (!response.ok) throw new Error(`Failed to fetch unified_bot_report.md: ${response.statusText}`);
+            const response = await fetch('./crypto_bot_comparison_report.md');
+            if (!response.ok) throw new Error(`Failed to fetch crypto_bot_comparison_report.md: ${response.statusText}`);
             const markdown = await response.text();
             const report = {};
             const sections = markdown.split(/\n###\s*\d*\.?\s*/).slice(1);
@@ -976,7 +977,6 @@
             }
         }
 
-        // --- CORRECTED FUNCTION ---
         function periodToDate(period) {
             if (!period) return new Date(0);
             // Handles 'YYYY-Q#' and 'YYYYQ#'
@@ -990,7 +990,11 @@
                 }
             }
             if (period.includes('/')) {
-                return new Date(period);
+                const parts = period.split('/');
+                // Handles YYYY/MM/DD
+                if (parts.length === 3) {
+                    return new Date(parts[0], parts[1] - 1, parts[2]);
+                }
             }
             if (/^\d{4}$/.test(period)) {
                 return new Date(period, 0, 1);
@@ -1006,45 +1010,66 @@
             const startDateStr = document.getElementById('start-date').value;
             const endDateStr = document.getElementById('end-date').value;
             const isBacktest = document.getElementById('quarterly-data-toggle').checked;
-            const reportKey = isBacktest ? 'backtest_quarterly_report' : 'live_quarterly_report';
 
             const startDate = startDateStr ? new Date(startDateStr) : null;
             const endDate = endDateStr ? new Date(endDateStr) : null;
 
+            // 1. Get all unique, valid, and filtered labels from ALL selected bots first.
             let allLabels = new Set();
+            bots.forEach(bot => {
+                const reportKey = isBacktest ? 'backtest_quarterly_report' : 'live_quarterly_report';
+                if (!bot[reportKey] || !Array.isArray(bot[reportKey])) return;
+
+                bot[reportKey].forEach(report => {
+                    const period = report['Time Period'] || report['Time Periods'];
+                    if (!period) return;
+
+                    const reportDate = periodToDate(period);
+                    if (reportDate.getTime() === 0) return; // Skip invalid periods
+
+                    let periodType;
+                    if (period.includes('Q')) periodType = 'quarterly';
+                    else if (period.includes('/')) periodType = 'weekly';
+                    else if (/^\d{4}$/.test(period)) periodType = 'yearly';
+
+                    if (periodType !== timeframe) return;
+                    if (startDate && reportDate < startDate) return;
+                    if (endDate && reportDate > endDate) return;
+
+                    allLabels.add(period);
+                });
+            });
+            const sortedLabels = Array.from(allLabels).sort((a, b) => periodToDate(a) - periodToDate(b));
+
+            // 2. Create datasets for each bot, aligning with the master sortedLabels list.
             const datasets = bots.map((bot, index) => {
+                const reportKey = isBacktest ? 'backtest_quarterly_report' : 'live_quarterly_report';
                 if (!bot[reportKey] || !Array.isArray(bot[reportKey])) return null;
 
-                const filteredAndSortedReports = bot[reportKey]
-                    .map(report => ({...report, date: periodToDate(report['Time Period'] || report['Time Periods'])}))
-                    .filter(report => {
-                        const period = report['Time Period'] || report['Time Periods'];
-                        if (!period) return false;
-
-                        let periodType;
-                        if (period.includes('Q')) periodType = 'quarterly';
-                        else if (period.includes('/')) periodType = 'weekly';
-                        else if (/^\d{4}$/.test(period)) periodType = 'yearly';
-
-                        if (periodType !== timeframe) return false;
-
-                        if (startDate && report.date < startDate) return false;
-                        if (endDate && report.date > endDate) return false;
-
-                        return true;
-                    })
-                    .sort((a, b) => a.date - b.date);
+                const reportMap = new Map(
+                    bot[reportKey].map(r => [r['Time Period'] || r['Time Periods'], r])
+                );
 
                 let cumulativeReturn = 0;
-                const data = filteredAndSortedReports.map(report => {
-                    const period = report['Time Period'] || report['Time Periods'];
-                    allLabels.add(period);
-                    const returnValue = report['Initial Capital Return (%)'] || report['∑ Profit (%)'] || 0;
-                    cumulativeReturn += returnValue;
-                    return {
-                        x: period,
-                        y: cumulativeReturn
-                    };
+                let hasStarted = false;
+
+                const data = sortedLabels.map(label => {
+                    const report = reportMap.get(label);
+                    if (report) {
+                        hasStarted = true;
+                        const returnValue = report['Initial Capital Return (%)'] || report['∑ Profit (%)'] || 0;
+                        cumulativeReturn += returnValue;
+                        return {
+                            x: periodToDate(label).getTime(),
+                            y: cumulativeReturn
+                        };
+                    } else {
+                        // If bot's data hasn't started, use null. If it has started, carry forward the last value to fill gaps.
+                        return {
+                            x: periodToDate(label).getTime(),
+                            y: hasStarted ? cumulativeReturn : null
+                        };
+                    }
                 });
 
                 const color = `hsl(${(index * 360 / bots.length)}, 70%, 50%)`;
@@ -1059,10 +1084,9 @@
                 };
             }).filter(Boolean);
 
-            const sortedLabels = Array.from(allLabels).sort((a, b) => periodToDate(a) - periodToDate(b));
-
+            // 3. Handle Bitcoin Index
             try {
-                const fromTimestamp = (startDate || new Date('2025-01-01')).getTime() / 1000;
+                const fromTimestamp = (startDate || periodToDate(sortedLabels[0] || '2025-01-01')).getTime() / 1000;
                 const toTimestamp = (endDate || new Date()).getTime() / 1000;
 
                 const marketCapResponse = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`);
@@ -1091,19 +1115,15 @@
                             key = `${date.getFullYear()}-Q${quarter}`;
                         } else if (timeframe === 'yearly') {
                             key = `${date.getFullYear()}`;
-                        } else {
-                            const startOfWeek = new Date(date);
-                            startOfWeek.setHours(0,0,0,0);
-                            startOfWeek.setDate(date.getDate() - date.getDay());
+                        } else { // weekly
+                            const startOfWeek = new Date(date.setDate(date.getDate() - date.getDay()));
                             key = `${startOfWeek.getFullYear()}/${(startOfWeek.getMonth() + 1).toString().padStart(2, '0')}/${startOfWeek.getDate().toString().padStart(2, '0')}`;
                         }
-                        // By overwriting, we ensure we get the LAST market cap for the period, which is more accurate.
                         processedMarketCap[key] = value;
                     });
 
                     let initialMarketCap = null;
-                    sortedLabels.forEach(label => {
-                        // FIX: Normalize the lookup key to 'YYYY-Q#' format to match processed market data.
+                    const btcData = sortedLabels.map(label => {
                         const lookupKey = (timeframe === 'quarterly' && !label.includes('-'))
                             ? label.replace('Q', '-Q')
                             : label;
@@ -1111,41 +1131,39 @@
                         const currentMarketCap = processedMarketCap[lookupKey];
 
                         if (currentMarketCap) {
-                            if (initialMarketCap === null) {
-                                initialMarketCap = currentMarketCap;
-                            }
+                            if (initialMarketCap === null) initialMarketCap = currentMarketCap;
                             const percentageChange = ((currentMarketCap - initialMarketCap) / initialMarketCap) * 100;
-                            marketCapDataset.data.push({
-                                x: label, // Use the original label for the chart's x-axis
-                                y: percentageChange
-                            });
-                        } else {
-                            marketCapDataset.data.push({ x: label, y: null });
+                            return { x: periodToDate(label).getTime(), y: percentageChange };
                         }
+                        return { x: periodToDate(label).getTime(), y: null };
                     });
 
+                    marketCapDataset.data = btcData;
                     datasets.push(marketCapDataset);
-                } else {
-                    console.error("Market cap data from API is missing or not in the expected format.", marketCapData);
                 }
-
             } catch (error) {
                 console.error("Could not fetch market cap data:", error);
             }
 
-
+            // 4. Create the chart with a time scale
             const ctx = document.getElementById('quarterlyPerformanceChart').getContext('2d');
             chartInstances.quarterlyPerformanceChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: sortedLabels,
                     datasets: datasets
                 },
                 options: {
                     responsive: true,
                     plugins: { legend: { position: 'bottom' } },
                     scales: {
-                        x: { title: { display: true, text: 'Time Period' } },
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: timeframe === 'weekly' ? 'week' : (timeframe === 'yearly' ? 'year' : 'quarter'),
+                                tooltipFormat: 'PP' // From date-fns: e.g., 'Aug 7, 2025'
+                            },
+                            title: { display: true, text: 'Time Period' }
+                        },
                         y: {
                             title: { display: true, text: 'Cumulative Return (%)' },
                             position: 'left'
