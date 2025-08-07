@@ -325,19 +325,21 @@
         }
 
         function getDateOfISOWeek(w, y) {
-            const simple = new Date(y, 0, 1 + (w - 1) * 7);
-            const dow = simple.getDay();
+            const simple = new Date(Date.UTC(y, 0, 1 + (w - 1) * 7));
+            const dow = simple.getUTCDay();
             const ISOweekStart = simple;
             if (dow <= 4)
-                ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+                ISOweekStart.setUTCDate(simple.getUTCDate() - simple.getUTCDay() + 1);
             else
-                ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+                ISOweekStart.setUTCDate(simple.getUTCDate() + 8 - simple.getUTCDay());
             return ISOweekStart;
         }
 
         function getPeriodType(period) {
             if (/^\d{4}-W\d{2}$/.test(period)) return 'weekly';
+            if (/^\d{4}\/\d{2}\/\d{2}\/\d{4}\/\d{2}\/\d{2}$/.test(period)) return 'weekly'; // Handle date range format
             if (/^\d{4}-?Q\d$/.test(period)) return 'quarterly';
+            if (/^\d{4}-\d{2}$/.test(period)) return 'monthly';
             if (/^\d{4}$/.test(period)) return 'yearly';
             return null;
         }
@@ -347,6 +349,10 @@
             const type = getPeriodType(period);
             try {
                 if (type === 'weekly') {
+                    if (period.includes('/')) {
+                        const [startDate] = period.split('/');
+                        return new Date(startDate.replace(/\//g, '-'));
+                    }
                     const [year, week] = period.split('-W').map(Number);
                     return getDateOfISOWeek(week, year);
                 }
@@ -357,6 +363,10 @@
                     const month = (quarter - 1) * 3;
                     return new Date(year, month, 1);
                 }
+                if (type === 'monthly') {
+                    const [year, month] = period.split('-');
+                    return new Date(year, parseInt(month) - 1, 1);
+                }
                 if (type === 'yearly') {
                     return new Date(period, 0, 1);
                 }
@@ -365,6 +375,12 @@
                 return null;
             }
             return null;
+        }
+
+        function parseExecDays(execDaysString) {
+            if (!execDaysString || typeof execDaysString !== 'string') return 0;
+            const match = execDaysString.match(/^(\d+)/);
+            return match ? parseInt(match[1], 10) : 0;
         }
 
         // --- UI RENDERING & LOGIC ---
@@ -383,7 +399,7 @@
                 const marketChange = bot[perfKey]?.['Market Change (%)']?.toFixed(2) ?? 'N/A';
                 const expDrawdown = bot[perfKey]?.['Worst Expected Drawdown (%)']?.toFixed(2) ?? 'N/A';
                 const recoveryDays = bot[perfKey]?.['Maximum Recovery Time (Days)'] ?? 'N/A';
-                const execDays = parseInt(bot[perfKey]?.['Number of Execution Days']) || 'N/A';
+                const execDays = parseExecDays(bot[perfKey]?.['Number of Execution Days']) || 'N/A';
                 const avgDuration = bot[perfKey]?.['Average Position’s Duration'] ?? 'N/A';
 
                 const row = document.createElement('tr');
@@ -613,7 +629,7 @@
                                 <li><strong>Win Rate:</strong> ${bot.live_performance['Win Rate (%)']?.toFixed(2) ?? 'N/A'}%</li>
                                 <li><strong>Sharpe Ratio:</strong> ${bot.live_performance['Sharpe Ratio'] ?? 'N/A'}</li>
                                 <li><strong>Max Drawdown:</strong> ${bot.live_performance['Max Drawdown (%)'] ?? 'N/A'}%</li>
-                                <li><strong>Execution Days:</strong> ${parseInt(bot.live_performance['Number of Execution Days']) || 'N/A'}</li>
+                                <li><strong>Execution Days:</strong> ${parseExecDays(bot.live_performance['Number of Execution Days']) || 'N/A'}</li>
                             </ul>
                         </div>
                         <div>
@@ -623,7 +639,7 @@
                                 <li><strong>Win Rate:</strong> ${bot.backtest_performance['Win Rate (%)']?.toFixed(2) ?? 'N/A'}%</li>
                                 <li><strong>Sharpe Ratio:</strong> ${bot.backtest_performance['Sharpe Ratio'] ?? 'N/A'}</li>
                                 <li><strong>Max Drawdown:</strong> ${bot.backtest_performance['Max Drawdown (%)'] ?? 'N/A'}%</li>
-                                <li><strong>Execution Days:</strong> ${parseInt(bot.backtest_performance['Number of Execution Days']) || 'N/A'}</li>
+                                <li><strong>Execution Days:</strong> ${parseExecDays(bot.backtest_performance['Number of Execution Days']) || 'N/A'}</li>
                             </ul>
                         </div>
                     </div>
@@ -754,7 +770,7 @@
                     case 'recovery_days':
                         return bot[perfKey]?.['Maximum Recovery Time (Days)'] || -Infinity;
                     case 'exec_days':
-                        return parseInt(bot[perfKey]?.['Number of Execution Days']) || -Infinity;
+                        return parseExecDays(bot[perfKey]?.['Number of Execution Days']) || -Infinity;
                     case 'avg_duration':
                         return bot[perfKey]?.['Average Position’s Duration'] || "";
                     default: return 0;
@@ -857,7 +873,7 @@
                     bot[perfKey]?.['Market Change (%)']?.toFixed(2) ?? 'N/A',
                     bot[perfKey]?.['Worst Expected Drawdown (%)']?.toFixed(2) ?? 'N/A',
                     bot[perfKey]?.['Maximum Recovery Time (Days)'] ?? 'N/A',
-                    parseInt(bot[perfKey]?.['Number of Execution Days']) || 'N/A',
+                    parseExecDays(bot[perfKey]?.['Number of Execution Days']) || 'N/A',
                     bot[perfKey]?.['Average Position’s Duration'] ?? 'N/A',
                     bot.score.toFixed(2),
                 ].join(',');
@@ -938,9 +954,15 @@
                     botSelectorContainer.appendChild(wrapper);
                 });
 
-                selectedBotsForCharts = allBotsData.slice(0, 10).map(b => b.bot_id);
+                // Set default selected bots: Top 10 with > 20 execution days
+                selectedBotsForCharts = allBotsData
+                    .filter(b => parseExecDays(b.live_performance['Number of Execution Days']) > 20)
+                    .slice(0, 10)
+                    .map(b => b.bot_id);
+
                 selectedBotsForCharts.forEach(botId => {
-                    document.getElementById(`bot-checkbox-${botId}`).checked = true;
+                    const checkbox = document.getElementById(`bot-checkbox-${botId}`);
+                    if (checkbox) checkbox.checked = true;
                 });
 
                 document.getElementById('bot-selector-search').addEventListener('input', (e) => {
@@ -953,7 +975,10 @@
 
                 document.getElementById('reset-bot-selector').addEventListener('click', () => {
                     document.querySelectorAll('.bot-selector-item input').forEach(cb => cb.checked = false);
-                    selectedBotsForCharts = allBotsData.slice(0, 10).map(b => b.bot_id);
+                    selectedBotsForCharts = allBotsData
+                        .filter(b => parseExecDays(b.live_performance['Number of Execution Days']) > 20)
+                        .slice(0, 10)
+                        .map(b => b.bot_id);
                     selectedBotsForCharts.forEach(botId => {
                         const checkbox = document.getElementById(`bot-checkbox-${botId}`);
                         if (checkbox) checkbox.checked = true;
@@ -1052,9 +1077,10 @@
             let allLabels = new Set();
             bots.forEach(bot => {
                 const reportKey = isBacktest ? 'backtest_quarterly_report' : 'live_quarterly_report';
-                if (!bot[reportKey] || !Array.isArray(bot[reportKey])) return;
+                const reportArray = bot[reportKey] || bot.backtest_quarterly_report || []; // Fallback for mixed keys
+                if (!Array.isArray(reportArray)) return;
 
-                bot[reportKey].forEach(report => {
+                reportArray.forEach(report => {
                     const period = report['Time Period'] || report['Time Periods'];
                     if (!period) return;
 
@@ -1075,10 +1101,11 @@
 
             const datasets = bots.map((bot, index) => {
                 const reportKey = isBacktest ? 'backtest_quarterly_report' : 'live_quarterly_report';
-                if (!bot[reportKey] || !Array.isArray(bot[reportKey])) return null;
+                const reportArray = bot[reportKey] || bot.backtest_quarterly_report || [];
+                if (!Array.isArray(reportArray)) return null;
 
                 const reportMap = new Map(
-                    bot[reportKey].map(r => [r['Time Period'] || r['Time Periods'], r])
+                    reportArray.map(r => [r['Time Period'] || r['Time Periods'], r])
                 );
 
                 let cumulativeReturn = 0;
